@@ -161,12 +161,160 @@ os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
 accnos = fasta[0:fasta.find('fasta')] + 'uchime.accnos'
 tmp = numpy.genfromtxt(accnos, dtype='str')
 
+# remove identified chimeras, throwing exception if all sequences were flagged as chimeras
 if tmp.shape[0] > 0:
     os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
                         "remove.seqs(accnos="+accnos+", fasta="+fasta+", name="+names+", " +
                                     "group="+groups+", dups=T)\"")
 else:
     raise Exception("All sequences flagged as chimeras!")
+
+################# NIKHIL #################
+
+fasta = fasta[0:fasta.find('fasta')] + 'pick.fasta'
+print fasta
+names = names[0:names.find('names')] + 'pick.names'
+groups = groups[0:groups.find('groups')] + 'pick.groups'
+
+# classify sequences using given taxonomy trainset
+os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
+          "classify.seqs(fasta="+fasta+", name="+names+", group="+groups+
+          ", template=trainset7_112011.pds.fasta, taxonomy=trainset7_112011.pds.tax, cutoff=80, processors=12)\"")
+
+taxonomy = fasta[0:fasta.find('fasta')] + 'pds.taxonomy'
+accnos = fasta[0:fasta.find('fasta')] + 'pds.flip.accnos'
+
+# remove contaminant mitochondria/chloroplast sequences
+os.system("mothur \"#set.logfile(name=master.logfile, append=T);" + 
+          "remove.lineage(fasta="+fasta+", name="+names+", group="+groups+", taxonomy="+taxonomy+
+          ", taxon=Mitochondria-Cyanobacteria_Chloroplast-unknown)\"")
+
+taxonomy = taxonomy[0:taxonomy.find('taxonomy')] + 'pick.taxonomy'
+names = names[0:names.find('names')] + 'pick.names'
+fasta = fasta[0:fasta.find('fasta')] + 'pick.fasta'
+groups = groups[0:groups.find('groups')] + 'pick.groups'
+
+# summary??
+
+# final files (is this needed?)
+os.system("mothur \"#system(cp "+fasta+" final.fasta)\"")
+fasta = 'final.fasta'
+os.system("mothur \"#system(cp "+names+" final.names)\"")
+names = 'final.names'
+os.system("mothur \"#system(cp "+groups+" final.groups)\"")
+groups = 'final.groups'
+os.system("mothur \"#system(cp "+taxonomy+" final.taxonomy)\"")
+taxonomy = 'final.taxonomy'
+
+### get sequence data ###
+
+os.system("mothur \"#set.logfile(name=master.logfile, append=T);" + 
+          "count.groups(group=final.groups)\" > seq_data.out")
+
+### pull apart data in x.seq_data.out ###
+
+num_lines = sum(1 for line in open('.seq_data.out'))
+data = []
+f = open('.seq_data.out')
+for i in range(0, num_lines-2) :
+      if i > 28:
+      	   data.append(f.readline())
+      else:
+	   f.readline()
+f.close()
+locs = []
+nums = []
+for i in range(0, len(data)):
+      data[i] = data[i][:-2]
+for i in range(0, len(data)):
+      temp1,_,temp2 = data[i].partition(' contains ')
+      locs.append(temp1)
+      nums.append(temp2)
+
+### print warnings, find optimal sequence size and save ctrl seqs to file ###
+
+are_controls = raw_input("Do you have controls? Enter 1 for 'yes' or 2 for 'no': ")
+are_controls = int(are_controls)
+if are_controls == 1:
+      ctrls = []
+      num_lines2 = sum(1 for line in open('.control.samples'))
+      f = open('.control.samples')
+      for i in range(0, num_lines2):
+      	  ctrls.append(f.readline())
+      f.close()
+      for i in range(0, len(ctrls)):
+      	  ctrls[i] = ctrls[i][:-1]
+      ctrl_nums = []
+      ctrl_warn = []
+      ctrl_locs = []
+      for i in range(0, len(ctrls)):
+      	  for j in range(0, len(locs)-1):
+      	      if ctrls[i] == locs[j]:
+	      	 ctrl_locs.append(locs.pop(j))
+	      	 ctrl_nums.append(nums.pop(j))
+      for i in range(0, len(ctrl_nums)):
+      	  if float(ctrl_nums[i]) > 1000:
+      	     ctrl_warn.append(ctrl_locs[i])
+
+      f = open('.control.seqs', 'w')
+      for i in range(0, len(ctrls)):
+      	  f.write(ctrls[i] + ": " + ctrl_nums[i] + " \n")
+      f.close()
+
+      print ""
+      print "Warning: the following control samples have an unusually high number of sequences: " + str(ctrl_warn)
+
+
+f = open('.temp.numseqs', 'w')
+for i in range(0, len(nums)):
+      f.write(str(nums[i]) + " \n")
+f.close()
+
+
+low_warn = []
+for i in range(0, len(nums)):
+      if float(nums[i]) < 3000:
+      	   low_warn.append(locs[i])
+print ""
+print "Warning: the following samples have an unusually low number of sequences: " + str(low_warn)
+
+### user may choose to keep low-sequence samples ###
+
+low_seq_nums = []
+for i in range(0, len(low_warn)):
+      for j in range(0, len(nums)-1):
+      	   if locs[j] == low_warn[i]:
+	      low_seq_nums.append(nums[j])
+print ""
+for i in range(0, len(low_warn)):
+      print low_warn[i] + " has " + low_seq_nums[i] + " sequences."
+
+
+for i in range(0, len(low_warn)):
+      for j in range(0, len(nums)-1):
+      	   if locs[j] == low_warn[i]:
+	      locs.pop(j)
+	      nums.pop(j)
+highest = 0
+for i in range(0, len(nums)):
+      if nums[i] > highest:
+      	   highest = nums[i]
+lowest = highest
+
+for i in range(0, len(nums)):
+      if nums[i] < lowest:
+      	   lowest = nums[i]
+	   ideal_loc = locs[i]
+print ""
+lowest = raw_input("We recommend that the lowest number of sequences should be " + lowest + " from " + ideal_loc + ". What would you like to set the lowest allowed number of sequences to? ")
+
+### remove controls ###
+
+if are_controls == 1:
+      os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
+                "remove.groups(fasta="+fasta+", accnos="+x+".control.samples, group="+groups+
+                ", name="+names+".final.names, taxonomy="+taxonomy+")\"")
+
 
 #os.system("mothur \"#summary.seqs(fasta="+x+".shhh.trim.unique.good.filter.unique.precluster.pick.fasta, name="+x+".shhh.trim.unique.good.filter.unique.precluster.pick.names)\"")
 
