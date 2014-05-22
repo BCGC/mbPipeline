@@ -477,7 +477,7 @@ for i in range(0, len(sample1)):
       sample1[i] = sample1[i][:-1]
 sample1[0] = "sample1"
 
-os.system("cut -f3 "+summary+"- > .temp_sample2.out")
+os.system("cut -f3 "+summary+" > .temp_sample2.out")
 sample2 = []
 f = open('.temp_sample2.out')
 for i in range(0, num_lines5):
@@ -497,7 +497,7 @@ for i in range(0, len(bdiv)):
       bdiv[i] = bdiv[i][:-1]
 bdiv[0] = "bdiv"
 
-os.system("cut -f6 "+summary+" > .temp_cmin.out")
+os.system("cut -f7 "+summary+" > .temp_cmin.out")
 cmin = []
 f = open('.temp_cmin.out')
 for i in range(0, num_lines5):
@@ -511,7 +511,7 @@ for i in range(1, len(cmin)):
       cmin[i] = str(cmin[i])
 cmin[0] = "cmin"
 
-os.system("cut -f7 "+summary+" > "".temp_cmax.out")
+os.system("cut -f6 "+summary+" > "".temp_cmax.out")
 cmax = []
 f = open('.temp_cmax.out')
 for i in range(0, num_lines5):
