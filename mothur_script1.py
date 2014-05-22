@@ -531,6 +531,9 @@ with open('beta_data.out', 'w') as f:
 f.close()
 
 
+### USING mbGRAPHCIS R PACKAGE TO PRODUCE GRAPHS ###
+os.system("Rscript graphall.R "+taxonomy+" "+txshared+" 0.014")
+
 
 
 
