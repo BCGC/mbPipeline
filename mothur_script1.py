@@ -314,6 +314,49 @@ if are_controls == 1:
       os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
                 "remove.groups(fasta="+fasta+", accnos="+x+".control.samples, group="+groups+
                 ", name="+names+".final.names, taxonomy="+taxonomy+")\"")
+      fasta = fasta[0:fasta.find('fasta')] + 'pick.fasta'
+      taxonomy = taxonomy[0:taxonomy.find('taxonomy')] + 'pick.taxonomy'
+      names = names[0:names.find('names')] + 'pick.names'
+      groups = groups[0:groups.find('groups')] + 'pick.groups'
+
+### OTUs ###
+
+os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
+          "dist.seqs(fasta="+fasta+", cutoff=0.15, processors=12)\"")
+
+dist = fasta[0:fasta.find('fasta')] + 'dist'
+
+os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
+          "cluster(column="+dist+", name="+names+")\"")
+
+list = fasta[0:fasta.find('fasta')] + 'an.list'
+
+os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
+          "make.shared(list="+list+", group="+groups+", label=0.03)\"")
+
+shared = list[0:list.find('list')] + 'shared'
+
+os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
+          "sub.sample(shared="+shared+", size="+lowest+")\"")
+
+os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
+          "classify.otu(list="+list+", name="+names+", taxonomy="+taxonomy+", label=0.03)\"")
+
+os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
+          "phylotype(taxonomy="+taxonomy+", name="+names+", label=1)\"")
+
+txlist = fasta[0:fasta.find('fasta')] + 'tx.list'
+
+os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
+          "make.shared(list="+txlist+", group="+groups+", label=1)\"")
+
+txshared = txlist[0:txlist.find('list')] + 'shared'
+
+os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
+          "sub.sample(shared="+txshared+", size="+lowest+")\"")
+
+os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
+          "classify.otu(list="+txlist+", name="+names+", taxonomy="+taxonomy+", label=1)\"")
 
 
 #os.system("mothur \"#summary.seqs(fasta="+x+".shhh.trim.unique.good.filter.unique.precluster.pick.fasta, name="+x+".shhh.trim.unique.good.filter.unique.precluster.pick.names)\"")
