@@ -197,19 +197,19 @@ groups = groups[0:groups.find('groups')] + 'pick.groups'
 # summary??
 
 # final files (is this needed?)
-os.system("mothur \"#system(cp "+fasta+" final.fasta)\"")
+os.system("cp "+fasta+" final.fasta")
 fasta = 'final.fasta'
-os.system("mothur \"#system(cp "+names+" final.names)\"")
+os.system("cp "+names+" final.names")
 names = 'final.names'
-os.system("mothur \"#system(cp "+groups+" final.groups)\"")
+os.system("cp "+groups+" final.groups")
 groups = 'final.groups'
-os.system("mothur \"#system(cp "+taxonomy+" final.taxonomy)\"")
+os.system("cp "+taxonomy+" final.taxonomy")
 taxonomy = 'final.taxonomy'
 
 ### get sequence data ###
 
 os.system("mothur \"#set.logfile(name=master.logfile, append=T);" + 
-          "count.groups(group=final.groups)\" > seq_data.out")
+          "count.groups(group=final.groups)\" > .seq_data.out")
 
 ### pull apart data in x.seq_data.out ###
 
@@ -217,7 +217,7 @@ num_lines = sum(1 for line in open('.seq_data.out'))
 data = []
 f = open('.seq_data.out')
 for i in range(0, num_lines-2) :
-      if i > 28:
+      if i > 30: #Should start at 30 instead of 28, is this efficient? why not range starting at 30??
       	   data.append(f.readline())
       else:
 	   f.readline()
