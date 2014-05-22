@@ -216,11 +216,10 @@ os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
 num_lines = sum(1 for line in open('.seq_data.out'))
 data = []
 f = open('.seq_data.out')
-for i in range(0, num_lines-2) :
-      if i > 30: #Should start at 30 instead of 28, is this efficient? why not range starting at 30??
-      	   data.append(f.readline())
-      else:
-	   f.readline()
+for i in range(0, num_lines) :
+      text = f.readline()
+      if 'contains' in text:
+      	   data.append(text)
 f.close()
 locs = []
 nums = []
@@ -339,6 +338,8 @@ shared = list[0:list.find('list')] + 'shared'
 os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
           "sub.sample(shared="+shared+", size="+lowest+")\"")
 
+shared = list[0:shared.find('shared')] + '0.03.subsample.shared'
+
 os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
           "classify.otu(list="+list+", name="+names+", taxonomy="+taxonomy+", label=0.03)\"")
 
@@ -358,6 +359,38 @@ os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
 os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
           "classify.otu(list="+txlist+", name="+names+", taxonomy="+taxonomy+", label=1)\"")
 
+### Alpha Diversity ###
+
+os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
+          "collect.single(shared="+shared+", calc=chao-invsimpson, freq=100)\"")
+
+sample_list = []
+os.system("grep -l '0.03' *.invsimpson > .sample_list.out")
+num_lines3 = sum(1 for line in open('.sample_list.out'))
+f = open('.sample_list.out')
+for i in range(0, num_lines3):
+      sample_list.append(f.readline())
+      sample_list[i] = sample_list[i][:-1]
+f.close()
+temp1 = []
+summ = 0
+invsimpson = []
+for i in range(0, num_lines3):
+      os.system("cut -f2 -s "+sample_list[i]+" | tail -n 5 > .temp_nums.out")
+      num_lines4 = sum(1 for line in open('.temp_nums.out'))
+      f = open('.temp_nums.out')
+      for j in range(0, num_lines4):
+      	  temp1.append(f.readline())
+      for z in range(0, num_lines4):
+      	  summ += float(temp1[z])
+      temp1 = []
+      invsimpson.append(summ/num_lines4)
+      summ = 0
+      f.close()
+f = open('.temp.adiv', 'w')
+for i in range(0, len(invsimpson)):
+      f.write(str(invsimpson[i]) + ' \n')
+f.close()
 
 #os.system("mothur \"#summary.seqs(fasta="+x+".shhh.trim.unique.good.filter.unique.precluster.pick.fasta, name="+x+".shhh.trim.unique.good.filter.unique.precluster.pick.names)\"")
 
