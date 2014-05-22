@@ -196,7 +196,7 @@ groups = groups[0:groups.find('groups')] + 'pick.groups'
 
 # summary??
 
-# final files (is this needed?)
+# final files
 os.system("cp "+fasta+" final.fasta")
 fasta = 'final.fasta'
 os.system("cp "+names+" final.names")
@@ -269,6 +269,10 @@ for i in range(0, len(nums)):
       f.write(str(nums[i]) + " \n")
 f.close()
 
+f = open('.temp.locs', 'w')
+for i in range(0, len(locs)):
+      f.write(str(locs[i]) + " \n")
+f.close()
 
 low_warn = []
 for i in range(0, len(nums)):
@@ -338,6 +342,7 @@ shared = list[0:list.find('list')] + 'shared'
 os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
           "sub.sample(shared="+shared+", size="+lowest+")\"")
 
+sharedold = shared #FIGURE OUT WHATS HAPPENING HERE - THIS IS BAD NOMENCLATURE - but works for now ;)
 shared = list[0:shared.find('shared')] + '0.03.subsample.shared'
 
 os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
@@ -391,6 +396,147 @@ f = open('.temp.adiv', 'w')
 for i in range(0, len(invsimpson)):
       f.write(str(invsimpson[i]) + ' \n')
 f.close()
+
+### Generating Graphics Data File ###
+
+#NEED TO DEVELOP A WAY TO HANDLE METADATA - FOR NOW MAKING STUFF UP
+seqs = ["meta", "nseqs"]
+adiv = ["meta", "adiv"]
+barcode = ["meta", "barcode"]
+variables = []
+num_lines = sum(1 for line in open('.temp.numseqs'))
+print "You must enter at least one set of independent categorical or continuous variables that describe each sample in order to generate plots!"
+cont = "1"
+while cont == "1":
+      newvar = raw_input("Enter the name describing the first variable (eg. gender, age, etc.): ")
+      newvarlist = []
+      success = False
+      while not success:
+            type = raw_input("Enter the type of variable that it is, cat for catergorical or cont for continuous (eg. gender is cat, age is cont): ")
+            if "cat" in type:
+                  newvarlist.append('cat')
+                  success = True
+            if "cont" in type:
+                  newvarlist.append('cont')
+                  success = True
+      newvarlist.append(newvar)
+      f = open('.temp.locs')
+      for i in range(0, num_lines) :
+            barcode = f.readline()
+            value = raw_input("Enter value of " +newvar+ " describing " +barcode+ "(be sure to be consistent!) : ")
+            newvarlist.append(value)
+      f.close()
+      variables.append(newvarlist)
+      print ""
+      print "Entry for variable completed."
+      print ""
+      cont = raw_input("Are there more variables to define and enter? Enter 1 for yes or 2 for no: ")
+
+f = open('.temp.numseqs')
+for i in range(0, num_lines) :
+    seqs.append(f.readline())
+f.close()
+
+f = open('.temp.adiv')
+for i in range(0, num_lines) :
+    adiv.append(f.readline())
+f.close()
+
+f = open('.temp.locs')
+for i in range(0, num_lines) :
+    barcode.append(f.readline())
+f.close()
+
+for i in range(2, num_lines+2) :
+    barcode[i] = barcode[i][:-2]
+    adiv[i] = adiv[i][:-2]
+    seqs[i] = seqs[i][:-2]
+
+f = open('graphics_data.txt', 'w')
+for i in range(0, num_lines+2):
+      f.write(barcode[i]+"\t"+seqs[i]+"\t"+adiv[i]+"\t")
+      for j in range(0, len(variables)):
+            f.write(variables[j][i]+"\t")
+      f.write("\n")
+f.close()
+
+### Beta Diversity ### NOT WORKING
+
+os.system("mothur \"#summary.shared(shared="+sharedold+", calc=thetayc)\"")
+
+summary = sharedold + '.summary'
+
+os.system("cut -f2 "+summary+" > .temp_sample1.out")
+num_lines5 = sum(1 for line in open('.temp_sample1.out'))
+sample1 = []
+f = open('.temp_sample1.out')
+for i in range(0, num_lines5):
+      sample1.append(f.readline())
+f.close()
+for i in range(0, len(sample1)):
+      sample1[i] = sample1[i][:-1]
+sample1[0] = "sample1"
+
+os.system("cut -f3 "+summary+"- > .temp_sample2.out")
+sample2 = []
+f = open('.temp_sample2.out')
+for i in range(0, num_lines5):
+      sample2.append(f.readline())
+f.close()
+for i in range(0, len(sample2)):
+      sample2[i] = sample2[i][:-1]
+sample2[0] = "sample2"
+
+os.system("cut -f5 "+summary+" > .temp_bdiv.out")
+bdiv = []
+f = open('.temp_bdiv.out')
+for i in range(0, num_lines5):
+      bdiv.append(f.readline())
+f.close()
+for i in range(0, len(bdiv)):
+      bdiv[i] = bdiv[i][:-1]
+bdiv[0] = "bdiv"
+
+os.system("cut -f6 "+summary+" > .temp_cmin.out")
+cmin = []
+f = open('.temp_cmin.out')
+for i in range(0, num_lines5):
+      cmin.append(f.readline())
+f.close()
+for i in range(0, len(cmin)):
+      cmin[i] = cmin[i][:-1]
+for i in range(1, len(cmin)):
+      cmin[i] = 1 - float(cmin[i])
+for i in range(1, len(cmin)):
+      cmin[i] = str(cmin[i])
+cmin[0] = "cmin"
+
+os.system("cut -f7 "+summary+" > "".temp_cmax.out")
+cmax = []
+f = open('.temp_cmax.out')
+for i in range(0, num_lines5):
+      cmax.append(f.readline())
+f.close()
+for i in range(0, len(cmax)):
+      cmax[i] = cmax[i][:-1]
+for i in range(1, len(cmax)):
+      cmax[i] = 1 - float(cmax[i])
+for i in range(1, len(cmax)):
+      cmax[i] = str(cmax[i])
+cmax[0] = "cmax"
+
+with open('beta_data.out', 'w') as f:
+      for f1, f2, f3, f4, f5 in zip(sample1, sample2, bdiv, cmin, cmax):
+            f.write(f1+"\t"+f2+"\t"+f3+"\t"+f4+"\t"+f5+"\n")
+f.close()
+
+
+
+
+
+#################################### IGNORE VVVVVVVVV
+
+
 
 #os.system("mothur \"#summary.seqs(fasta="+x+".shhh.trim.unique.good.filter.unique.precluster.pick.fasta, name="+x+".shhh.trim.unique.good.filter.unique.precluster.pick.names)\"")
 
