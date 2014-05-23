@@ -348,6 +348,8 @@ shared = list[0:shared.find('shared')] + '0.03.subsample.shared'
 os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
           "classify.otu(list="+list+", name="+names+", taxonomy="+taxonomy+", label=0.03)\"")
 
+txconsensus = taxonomy[0:taxonomy.find('taxonomy')] + 'an.0.03.cons.taxonomy'
+
 os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
           "phylotype(taxonomy="+taxonomy+", name="+names+", label=1)\"")
 
@@ -363,6 +365,7 @@ os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
 
 os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
           "classify.otu(list="+txlist+", name="+names+", taxonomy="+taxonomy+", label=1)\"")
+txconsensus = taxonomy[0:taxonomy.find('taxonomy')] + 'tx.1.cons.taxonomy'
 
 ### Alpha Diversity ###
 
@@ -399,10 +402,10 @@ f.close()
 
 ### Generating Graphics Data File ###
 
-#NEED TO DEVELOP A WAY TO HANDLE METADATA - FOR NOW MAKING STUFF UP
+#NEED TO DEVELOP A WAY TO HANDLE METADATA - FOR NOW MANUAL INPUT
 seqs = ["meta", "nseqs"]
 adiv = ["meta", "adiv"]
-barcode = ["meta", "barcode"]
+barcode = ["meta", "Barcode"]
 variables = []
 num_lines = sum(1 for line in open('.temp.numseqs'))
 print "You must enter at least one set of independent categorical or continuous variables that describe each sample in order to generate plots!"
@@ -460,7 +463,7 @@ for i in range(0, num_lines+2):
       f.write("\n")
 f.close()
 
-### Beta Diversity ### NOT WORKING
+### Beta Diversity ###
 
 os.system("mothur \"#summary.shared(shared="+sharedold+", calc=thetayc)\"")
 
@@ -532,7 +535,7 @@ f.close()
 
 
 ### USING mbGRAPHCIS R PACKAGE TO PRODUCE GRAPHS ###
-os.system("Rscript graphall.R "+taxonomy+" "+txshared+" 0.014")
+os.system("Rscript graphall.R "+txconsensus+" "+txshared+" 0.14")
 
 
 
