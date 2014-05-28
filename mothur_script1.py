@@ -556,7 +556,7 @@ for i in range(2, num_lines+2) :
 num_lines = sum(1 for line in open(metadata))
 f1 = open(metadata)
 lines = f1.readlines()
-f2 = open("mb_graphics_data.txt", "w")
+f2 = open("final_data.txt", "w")
 for i in range(0, num_lines) :
       tabs = lines[i].split("\t")
       tabs[len(tabs)-1] = tabs[len(tabs)-1][0:tabs[len(tabs)-1].find('\n')]
@@ -565,6 +565,30 @@ for i in range(0, num_lines) :
       f2.write("\t".join(tabs)+"\n")
 f1.close()
 f2.close()
+
+if not len(indvars) == 0 :
+      f1 = open("final_data.txt")
+      f2 = open("mb_graphics_data.txt", "w")
+      lines = f1.readlines()
+      numcols = len(lines[0].split("\t"))
+      columns_to_ignore = []
+      for i in range(0, numcols) :
+            if lines[0].split("\t")[i] == "cat" or lines[0].split("\t")[i] == "cont" :
+                  if not lines[1].split("\t")[i] in indvars :
+                        columns_to_ignore.append(i)
+      for i in range(0, num_lines) :
+            tabs = lines[i].split("\t")
+            tabs[len(tabs)-1] = tabs[len(tabs)-1][0:tabs[len(tabs)-1].find('\n')]
+            tabs = [j for k, j in enumerate(tabs) if k not in columns_to_ignore]
+            tabs.append(seqs[i])
+            tabs.append(adiv[i])
+            f2.write("\t".join(tabs)+"\n")
+      f1.close()
+      f2.close()
+else:
+      import shutil
+      shutil.copy2("final_data.txt", "mb_graphics_data.txt")
+      
 
 os.system("Rscript graphall.R "+txconsensus+" "+txshared+" 0.14")
 

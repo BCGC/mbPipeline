@@ -76,6 +76,9 @@ except KeyError:
 
 try:
       indvars = args['indvars']
+      if not type(indvars) is list:
+            print("Warning: indvars is not a list, will use all independent variables in metadata (cat. and cont.) for graphing!")
 except KeyError:
       indvars = []
+      print("Will use all independent variables in metadata (cat. and cont.) for graphing!")
 
