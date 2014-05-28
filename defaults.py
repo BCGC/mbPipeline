@@ -30,12 +30,6 @@ except OSError:
       
 try:
       metadata = args['metadata']
-      found = False
-      for file in os.walk(DATAPATH):
-            if file.name == metadata:
-                  found = True
-      if not found:
-            raise Exception ("Metadata file was not found in data directory!")
 except KeyError:
       raise Exception("Metadata file not propvided!")
 
