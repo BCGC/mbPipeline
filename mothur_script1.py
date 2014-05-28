@@ -588,7 +588,11 @@ if not len(indvars) == 0 :
 else:
       import shutil
       shutil.copy2("final_data.txt", "mb_graphics_data.txt")
-      
+
+#import inspect
+#filename = inspect.getframeinfo(inspect.currentframe()).filename
+#path = os.path.dirname(os.path.abspath(filename))      
+#os.system(""+path+" "+txconsensus+" "+txshared+" "+min_stack_proportion+"")
 
 os.system("Rscript graphall.R "+txconsensus+" "+txshared+" "+min_stack_proportion+"")
 

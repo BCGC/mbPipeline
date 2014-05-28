@@ -1,3 +1,5 @@
+#!/usr/local/bin/Rscript
+
 args <- commandArgs(TRUE)
 
 
