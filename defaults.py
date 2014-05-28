@@ -82,3 +82,8 @@ except KeyError:
       indvars = []
       print("Will use all independent variables in metadata (cat. and cont.) for graphing!")
 
+try:
+      min_stack_proportion = args['min_stack_proportion']
+except KeyError:
+      min_stack_proprtion = 0.14
+      print("Minimum stack proportion not provided, will default to 0.14!")

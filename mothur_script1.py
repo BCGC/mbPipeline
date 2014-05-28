@@ -590,7 +590,7 @@ else:
       shutil.copy2("final_data.txt", "mb_graphics_data.txt")
       
 
-os.system("Rscript graphall.R "+txconsensus+" "+txshared+" 0.14")
+os.system("Rscript graphall.R "+txconsensus+" "+txshared+" "+min_stack_proportion+"")
 
 
 
