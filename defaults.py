@@ -27,6 +27,18 @@ except KeyError:
 except OSError:
       print("Invalid value for workdir, using default directory.")
 
+      
+try:
+      metadata = args['metadata']
+      found = False
+      for file in os.walk(DATAPATH):
+            if file.name == metadata:
+                  found = True
+      if not found:
+            raise Exception ("Metadata file was not found in data directory!")
+except KeyError:
+      raise Exception("Metadata file not propvided!")
+
 # link data files to the current working directory
 # this is going to need some work...not all oligos files will be in the DATAPATH
 try:
@@ -40,7 +52,8 @@ if os.path.isdir(DATAPATH):
       os.system("ln -fs " + DATAPATH + "trainset7_112011.pds.tax .")
       os.system("ln -fs " + DATAPATH + "LookUp_Titanium.pat .")
       os.system("ln -fs " + DATAPATH + "silva.* .")
-else:
+      os.system("ln -fs " + DATAPATH + metadata + "")
+else:-fs
       raise Exception("Bad value for datadir.")
 
 # make sure we have the project name ###
@@ -60,3 +73,9 @@ try:
       bdiffs = args['bdiffs']
 except KeyError:
       bdiffs = '1'
+
+try:
+      indvars = args['indvars']
+except KeyError:
+      indvars = []
+
