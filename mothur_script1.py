@@ -401,67 +401,66 @@ for i in range(0, len(invsimpson)):
 f.close()
 
 ### Generating Graphics Data File ###
-
 #NEED TO DEVELOP A WAY TO HANDLE METADATA - FOR NOW MANUAL INPUT
-seqs = ["meta", "nseqs"]
-adiv = ["meta", "adiv"]
-barcode = ["meta", "Barcode"]
-variables = []
-num_lines = sum(1 for line in open('.temp.numseqs'))
-print "You must enter at least one set of independent categorical or continuous variables that describe each sample in order to generate plots!"
-cont = "1"
-while cont == "1":
-      newvar = raw_input("Enter the name describing the first variable (eg. gender, age, etc.): ")
-      newvarlist = []
-      success = False
-      while not success:
-            type = raw_input("Enter the type of variable that it is, cat for catergorical or cont for continuous (eg. gender is cat, age is cont): ")
-            if "cat" in type:
-                  newvarlist.append('cat')
-                  success = True
-            if "cont" in type:
-                  newvarlist.append('cont')
-                  success = True
-      newvarlist.append(newvar)
-      f = open('.temp.locs')
-      for i in range(0, num_lines) :
-            barcode = f.readline()
-            value = raw_input("Enter value of " +newvar+ " describing " +barcode+ "(be sure to be consistent!) : ")
-            newvarlist.append(value)
-      f.close()
-      variables.append(newvarlist)
-      print ""
-      print "Entry for variable completed."
-      print ""
-      cont = raw_input("Are there more variables to define and enter? Enter 1 for yes or 2 for no: ")
+#seqs = ["meta", "nseqs"]
+#adiv = ["meta", "adiv"]
+#barcode = ["meta", "Barcode"]
+#variables = []
+#num_lines = sum(1 for line in open('.temp.numseqs'))
+#print "You must enter at least one set of independent categorical or continuous variables that describe each sample in order to generate plots!"
+#cont = "1"
+#while cont == "1":
+#      newvar = raw_input("Enter the name describing the first variable (eg. gender, age, etc.): ")
+#      newvarlist = []
+#      success = False
+#      while not success:
+#            type = raw_input("Enter the type of variable that it is, cat for catergorical or cont for continuous (eg. gender is cat, age is cont): ")
+#            if "cat" in type:
+#                  newvarlist.append('cat')
+#                  success = True
+#            if "cont" in type:
+#                  newvarlist.append('cont')
+#                  success = True
+#      newvarlist.append(newvar)
+#      f = open('.temp.locs')
+#      for i in range(0, num_lines) :
+#            barcode = f.readline()
+#            value = raw_input("Enter value of " +newvar+ " describing " +barcode+ "(be sure to be consistent!) : ")
+#            newvarlist.append(value)
+#      f.close()
+#      variables.append(newvarlist)
+#      print ""
+#      print "Entry for variable completed."
+#      print ""
+#      cont = raw_input("Are there more variables to define and enter? Enter 1 for yes or 2 for no: ")
+#
+#f = open('.temp.numseqs')
+#for i in range(0, num_lines) :
+#    seqs.append(f.readline())
+#f.close()
+#
+#f = open('.temp.adiv')
+#for i in range(0, num_lines) :
+#    adiv.append(f.readline())
+#f.close()
+#
+#f = open('.temp.locs')
+#for i in range(0, num_lines) :
+#    barcode.append(f.readline())
+#f.close()
 
-f = open('.temp.numseqs')
-for i in range(0, num_lines) :
-    seqs.append(f.readline())
-f.close()
-
-f = open('.temp.adiv')
-for i in range(0, num_lines) :
-    adiv.append(f.readline())
-f.close()
-
-f = open('.temp.locs')
-for i in range(0, num_lines) :
-    barcode.append(f.readline())
-f.close()
-
-for i in range(2, num_lines+2) :
-    barcode[i] = barcode[i][:-2]
-    adiv[i] = adiv[i][:-2]
-    seqs[i] = seqs[i][:-2]
-
-f = open('graphics_data.txt', 'w')
-for i in range(0, num_lines+2):
-      f.write(barcode[i]+"\t"+seqs[i]+"\t"+adiv[i]+"\t")
-      for j in range(0, len(variables)):
-            f.write(variables[j][i]+"\t")
-      f.write("\n")
-f.close()
+#for i in range(2, num_lines+2) :
+#    barcode[i] = barcode[i][:-2]
+#    adiv[i] = adiv[i][:-2]
+#    seqs[i] = seqs[i][:-2]
+#
+#f = open('graphics_data.txt', 'w')
+#for i in range(0, num_lines+2):
+#      f.write(barcode[i]+"\t"+seqs[i]+"\t"+adiv[i]+"\t")
+#      for j in range(0, len(variables)):
+#            f.write(variables[j][i]+"\t")
+#      f.write("\n")
+#f.close()
 
 ### Beta Diversity ###
 
@@ -535,6 +534,38 @@ f.close()
 
 
 ### USING mbGRAPHCIS R PACKAGE TO PRODUCE GRAPHS ###
+seqs = ["meta", "nseqs"]
+adiv = ["meta", "adiv"]
+num_lines = sum(1 for line in open('.temp.numseqs'))
+
+f = open('.temp.numseqs')
+for i in range(0, num_lines) :
+    seqs.append(f.readline())
+f.close()
+
+f = open('.temp.adiv')
+for i in range(0, num_lines) :
+    adiv.append(f.readline())
+f.close()
+
+for i in range(2, num_lines+2) :
+    barcode[i] = barcode[i][:-2]
+    adiv[i] = adiv[i][:-2]
+    seqs[i] = seqs[i][:-2]
+
+num_lines = sum(1 for line in open(metadata))
+f1 = open(metadata)
+lines = f1.readlines()
+f2 = open("mb_graphics_data.txt", "w")
+for i in range(0, num_lines) :
+      tabs = lines[i].split("\t")
+      tabs[len(tabs)-1] = tabs[len(tabs)-1][0:tabs[len(tabs)-1].find('\n')]
+      tabs.append(seqs[i])
+      tabs.append(adiv[i])
+      f2.write("\t".join(tabs)+"\n")
+f1.close()
+f2.close()
+
 os.system("Rscript graphall.R "+txconsensus+" "+txshared+" 0.14")
 
 
