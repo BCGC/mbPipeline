@@ -592,7 +592,7 @@ else:
 #import inspect
 #filename = inspect.getframeinfo(inspect.currentframe()).filename
 #path = os.path.dirname(os.path.abspath(filename))      
-#os.system("Rscript "+path+" "+txconsensus+" "+txshared+" "+min_stack_proportion+"")
+#os.system("Rscript "+path+"graphall.R "+txconsensus+" "+txshared+" "+min_stack_proportion+"")
 
 os.system("Rscript graphall.R "+txconsensus+" "+txshared+" "+min_stack_proportion+"")
 
