@@ -33,22 +33,33 @@ try:
 except KeyError:
       raise Exception("Metadata file not propvided!")
 
-# link data files to the current working directory
-# this is going to need some work...not all oligos files will be in the DATAPATH
+# link reference files to the current working directory
 try:
-      DATAPATH = args['datadir']
+      REFPATH = args['refpath']
 except KeyError:
-      DATAPATH = "/data1/johnsonra/microbiome/refdata/"
+      REFPATH = os.system("echo $MBREF")
+      if REFPATH == 0 :
+            REFPATH = "."
+            print("Warning: Reference data path not specified! Will try and use default directory.")
 
-if os.path.isdir(DATAPATH):
-      os.system("ln -fs " + DATAPATH + "oligos.txt .")
-      os.system("ln -fs " + DATAPATH + "trainset7_112011.pds.fasta .")
-      os.system("ln -fs " + DATAPATH + "trainset7_112011.pds.tax .")
-      os.system("ln -fs " + DATAPATH + "LookUp_Titanium.pat .")
-      os.system("ln -fs " + DATAPATH + "silva.* .")
-      os.system("ln -fs " + DATAPATH + metadata + "")
-else:-fs
-      raise Exception("Bad value for datadir.")
+if os.path.isdir(REFPATH):
+      os.system("ln -fs " + REFPATH + "/oligos.txt .")
+      os.system("ln -fs " + REFPATH + "/trainset* .")
+      os.system("ln -fs " + REFPATH + "/LookUp_Titanium.pat .")
+      os.system("ln -fs " + REFPATH + "/silva.* .")
+      os.system("ln -fs " + REFPATH + "/" + metadata + "")
+else:
+      raise Exception("Bad value for refpath.")
+
+# link data files to the current working directory
+try:
+      DATAPATH = args['datapath']
+except KeyError:
+      DATAPATH = "."
+      print("Warning: Data path for sff files not specified! Will try and use deafault directory.")
+
+if not os.path.isdir(DATAPATH):
+      raise Exception("Bad value for datapath.")
 
 # make sure we have the project name ###
 try:

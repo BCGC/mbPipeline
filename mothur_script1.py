@@ -29,14 +29,14 @@ print('\n')
 
 ### set up the files in my directory ###
 
-pipeline = 'data/'
-execfile(pipeline+'defaults.py') # where are these being kept? I should source them using absolute paths!
+installed = '../mbPipeline/'
+execfile(installed+'defaults.py') # where are these being kept? I should source them using absolute paths!
 
 ### process sff files ###
 
 # if not os.path.isfile("all.flow.files"):
 # get all sff files in the working current directory and convert to a character array
-sff = subprocess.Popen('ls | grep sff', shell = True, stdout=subprocess.PIPE).communicate()[0]
+sff = subprocess.Popen('find '+DATAPATH+' -name *.sff', shell = True, stdout=subprocess.PIPE).communicate()[0]
 sff = sff.rsplit('\n')
 
 # this is the repository for all sff files
@@ -586,7 +586,7 @@ if not len(indvars) == 0 :
       f1.close()
       f2.close()
 else:
-      import shutil
+      import shutil 
       shutil.copy2("final_data.txt", "mb_graphics_data.txt")
 
 #import inspect
