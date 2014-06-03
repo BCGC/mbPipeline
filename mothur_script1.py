@@ -46,11 +46,14 @@ os.system("printf '' > master.logfile")
 for f in sff:
       if os.path.isfile(f):
             x = f[0:f.find('.sff')]
+            head, tail = os.path.split(f)
+            y = tail[0:tail.find('.sff')]
             os.system("mothur \"#set.logfile(name=master.logfile, append=T); " +
                                 "set.dir(output=.); " +
                                 "sffinfo(sff="+x+".sff); " +
-                                "summary.seqs(fasta="+x+".fasta); " +
-                                "trim.flows(flow="+x+".flow, oligos=oligos.txt, pdiffs="+pdiffs+","+"bdiffs="+bdiffs+", processors=12)\"")
+                                "set.dir(input=.); " +
+                                "summary.seqs(fasta="+y+".fasta); " +
+                                "trim.flows(flow="+y+".flow, oligos=oligos.txt, pdiffs="+pdiffs+","+"bdiffs="+bdiffs+", processors=12)\"")
             os.system("cat "+x+".flow.files >> all.flow.files")
 
 
