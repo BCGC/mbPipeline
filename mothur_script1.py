@@ -55,11 +55,11 @@ for f in sff:
 
 flows = 'all.flow.files'
 os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
-                    "shhh.flows(file="+flows+", processors=12, lookup="+DATAPATH+")\"")
+                    "shhh.flows(file="+flows+", processors=12, lookup="+REFPATH+")\"")
 
-fasta = 'all.shhh.fasta'
-names = 'all.shhh.names'
-groups = 'all.shhh.groups'
+fasta = 'all.flow.shhh.fasta'
+names = 'all.flow.shhh.names'
+groups = 'all.flow.shhh.groups'
 
 
 # check our sequences as of right now
