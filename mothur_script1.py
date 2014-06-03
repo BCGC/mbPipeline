@@ -47,6 +47,7 @@ for f in sff:
       if os.path.isfile(f):
             x = f[0:f.find('.sff')]
             os.system("mothur \"#set.logfile(name=master.logfile, append=T); " +
+                                "set.dir(output=.); " +
                                 "sffinfo(sff="+x+".sff); " +
                                 "summary.seqs(fasta="+x+".fasta); " +
                                 "trim.flows(flow="+x+".flow, oligos=oligos.txt, pdiffs="+pdiffs+","+"bdiffs="+bdiffs+", processors=12)\"")
@@ -55,12 +56,13 @@ for f in sff:
 
 flows = 'all.flow.files'
 os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
-                    "shhh.flows(file="+flows+", processors=12, lookup="+REFPATH+")\"")
+                    "shhh.flows(file="+flows+", processors=12)\"")
 
 fasta = 'all.flow.shhh.fasta'
 names = 'all.flow.shhh.names'
 groups = 'all.flow.shhh.groups'
 
+raise Exception("DEBUGGING")
 
 # check our sequences as of right now
 # 0:seqname 1:start 2:end 3:nbases 4:ambigs 5:polymer 6:numSeqs
