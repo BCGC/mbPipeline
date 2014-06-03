@@ -1,0 +1,44 @@
+
+
+*********************************************************************************
+
+Mac version
+
+Using ReadLine
+
+Running 64Bit Version
+
+mothur v.1.25.1
+Last updated: 5/14/2012
+
+by
+Patrick D. Schloss
+
+Department of Microbiology & Immunology
+University of Michigan
+pschloss@umich.edu
+http://www.mothur.org
+
+When using, please cite:
+Schloss, P.D., et al., Introducing mothur: Open-source, platform-independent, community-supported software for describing and comparing microbial communities. Appl Environ Microbiol, 2009. 75(23):7537-41.
+
+Distributed under the GNU General Public License
+
+Type 'help()' for information on the commands that are available
+
+Type 'quit()' to exit program
+Script Mode
+
+
+mothur > set.logfile(name=master.logfile, append=T)
+
+mothur > chimera.uchime(fasta=all.flow.shhh.trim.unique.good.filter.unique.precluster.fasta, name=all.flow.shhh.trim.unique.good.filter.unique.precluster.names, group=all.flow.shhh.good.groups, processors=12)
+Unable to open all.flow.shhh.trim.unique.good.filter.unique.precluster.fasta. It will be disregarded.
+[ERROR]: no valid files.
+Unable to open all.flow.shhh.trim.unique.good.filter.unique.precluster.names. It will be disregarded.
+[ERROR]: no valid name files.
+Unable to open all.flow.shhh.good.groups. It will be disregarded.
+[ERROR]: no valid group files.
+[ERROR]: did not complete chimera.uchime.
+
+mothur > quit()

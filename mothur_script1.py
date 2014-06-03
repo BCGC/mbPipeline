@@ -69,7 +69,7 @@ groups = 'all.flow.shhh.groups'
 # 0:seqname 1:start 2:end 3:nbases 4:ambigs 5:polymer 6:numSeqs
 os.system("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fasta+", name="+names+")\"")
 
-summ = numpy.genfromtxt(fasta[0:fasta.find('fasta')] + 'summary', skiprows=1, dtype='str')
+summ = numpy.genfromtxt(fasta + '.summary', skiprows=1, dtype='str')
 
 tmp = 0
 for i in summ[:,3]:
@@ -111,7 +111,7 @@ fasta = fasta[0:fasta.find('fasta')] + 'align'
 # 0:seqname 1:start 2:end 3:nbases 4:ambigs 5:polymer 6:numSeqs
 os.system("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fasta+", name="+names+")\"")
 
-summ = numpy.genfromtxt(fasta[0:fasta.find('align')] + 'summary', skiprows=1, dtype='str')
+summ = numpy.genfromtxt(fasta + '.summary', skiprows=1, dtype='str')
 end = map(int, summ[:,2])
 
 if numpy.percentile(end, 25) != numpy.percentile(end, 75):
