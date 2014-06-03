@@ -54,7 +54,7 @@ for f in sff:
                                 "set.dir(input=.); " +
                                 "summary.seqs(fasta="+y+".fasta); " +
                                 "trim.flows(flow="+y+".flow, oligos=oligos.txt, pdiffs="+pdiffs+","+"bdiffs="+bdiffs+", processors=12)\"")
-            os.system("cat "+x+".flow.files >> all.flow.files")
+            os.system("cat "+y+".flow.files >> all.flow.files")
 
 
 flows = 'all.flow.files'
