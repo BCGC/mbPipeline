@@ -65,8 +65,6 @@ fasta = 'all.flow.shhh.fasta'
 names = 'all.flow.shhh.names'
 groups = 'all.flow.shhh.groups'
 
-raise Exception("DEBUGGING")
-
 # check our sequences as of right now
 # 0:seqname 1:start 2:end 3:nbases 4:ambigs 5:polymer 6:numSeqs
 os.system("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fasta+", name="+names+")\"")
