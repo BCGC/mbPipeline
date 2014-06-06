@@ -27,6 +27,21 @@ print(args)
 print('\n')
 
 
+### set up function system call with updating summary/fasta/names/groups filename ###
+def sysio(string, updateSummary, updateFasta, updateNames, updateGroups):
+      p = subprocess.Popen("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fasta+", name="+names+")\"", stdout=subprocess.PIPE, shell=True)
+      out = p.communicate()[0]
+      p.wait()
+      if updateSummary:
+            summary = out[out[0:out.rfind(".summary")].rfind("\n")+1:out[out.rfind(".summary"):len(out)].find("\n")+out.rfind(".summary")]
+      if updateFasta:
+            fasta = out[out[0:out.rfind(".fasta")].rfind("\n")+1:out[out.rfind(".fasta"):len(out)].find("\n")+out.rfind(".fasta")]
+      if updateNames:
+            names = out[out[0:out.rfind(".names")].rfind("\n")+1:out[out.rfind(".names"):len(out)].find("\n")+out.rfind(".names")]
+      if updateGroups:
+            groups = out[out[0:out.rfind(".groups")].rfind("\n")+1:out[out.rfind(".groups"):len(out)].find("\n")+out.rfind(".groups")]
+
+
 ### set up the files in my directory ###
 
 installed = '../mbPipeline/'
