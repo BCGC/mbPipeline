@@ -26,10 +26,18 @@ print('\nArgs:')
 print(args)
 print('\n')
 
+summary = ""
+fasta = ""
+names = ""
+groups = ""
 
 ### set up function system call with updating summary/fasta/names/groups filename ###
-def sysio(string, updateSummary, updateFasta, updateNames, updateGroups):
-      p = subprocess.Popen("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fasta+", name="+names+")\"", stdout=subprocess.PIPE, shell=True)
+def sysio(cmd, updateSummary, updateFasta, updateNames, updateGroups):
+      global summary
+      global fasta
+      global names
+      global groups
+      p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
       out = p.communicate()[0]
       p.wait()
       if updateSummary:
@@ -73,18 +81,18 @@ for f in sff:
 
 
 flows = 'all.flow.files'
-os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
-                    "shhh.flows(file="+flows+", processors=12)\"")
+sysio("mothur \"#set.logfile(name=master.logfile, append=T);" +
+                    "shhh.flows(file="+flows+", processors=12)\"", False, True, True, True)
 
-fasta = 'all.flow.shhh.fasta'
-names = 'all.flow.shhh.names'
-groups = 'all.flow.shhh.groups'
+#fasta = 'all.flow.shhh.fasta'
+#names = 'all.flow.shhh.names'
+#groups = 'all.flow.shhh.groups'
 
 # check our sequences as of right now
 # 0:seqname 1:start 2:end 3:nbases 4:ambigs 5:polymer 6:numSeqs
-os.system("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fasta+", name="+names+")\"")
+sysio("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fasta+", name="+names+")\"", True, False, False, False)
 
-summ = numpy.genfromtxt(fasta + '.summary', skiprows=1, dtype='str')
+summ = numpy.genfromtxt(summary, skiprows=1, dtype='str')
 
 tmp = 0
 for i in summ[:,3]:
