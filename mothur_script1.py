@@ -48,6 +48,7 @@ def sysio(cmd, updateSummary, updateFasta, updateNames, updateGroups):
             names = out[out[0:out.rfind(".names")].rfind("\n")+1:out[out.rfind(".names"):len(out)].find("\n")+out.rfind(".names")]
       if updateGroups:
             groups = out[out[0:out.rfind(".groups")].rfind("\n")+1:out[out.rfind(".groups"):len(out)].find("\n")+out.rfind(".groups")]
+      return out
 
 
 ### set up the files in my directory ###
@@ -119,16 +120,38 @@ os.system("mothur \"#unique.seqs(fasta="+fasta+", name="+names+")\"")
 
 fasta = fasta[0:fasta.find('fasta')] + 'unique.fasta'
 names = names[0:names.find('names')] + 'unique.names'
-os.system("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fasta+", name="+names+")\"")
-
+out = sysio("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fasta+", name="+names+")\"", True, False, False, False)
+out = out[out.find("97.5%-tile:")+12:len(out)]
+out = out[out.find("\t")+1:len(out)]
+out = out[out.find("\t")+1:len(out)]
+nbases = out[0:out.find("\t")]
 
 # initial alignment
 # oops...If you didn't get them flipped in the correct direction - use flip=T
 os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
+                    "align.seqs(fasta="+fasta+", reference=silva.bacteria.fasta, flip=F, processors=12)\"")
+
+fastacheck = fasta[0:fasta.find('fasta')] + 'align'
+out = sysio("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fastacheck+", name="+names+")\"", True, False, False, False)
+out = out[out.find("97.5%-tile:")+12:len(out)]
+out = out[out.find("\t")+1:len(out)]
+out = out[out.find("\t")+1:len(out)]
+nbasesafter = out[0:out.find("\t")]
+
+if int(nbasesafter)/int(nbases) <= 0.5 :
+      print("Warning: Attempting to flip direction and re-allign sequences.")
+      os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
                     "align.seqs(fasta="+fasta+", reference=silva.bacteria.fasta, flip=T, processors=12)\"")
-
-fasta = fasta[0:fasta.find('fasta')] + 'align'
-
+      fastacheck = fasta[0:fasta.find('fasta')] + 'align'
+      out = sysio("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fastacheck+", name="+names+")\"", True, False, False, False)
+      out = out[out.find("97.5%-tile:")+12:len(out)]
+      out = out[out.find("\t")+1:len(out)]
+      out = out[out.find("\t")+1:len(out)]
+      nbasesafter = out[0:out.find("\t")]
+      if int(nbasesafter)/int(nbases) <= 0.5 :
+            raise Exception("Error in aligning sequences! nbases too low.")
+      fasta =  fastacheck
+      print("Flipping was successful!")
 
 # screen the sequences so we only keep the stuff in the region we are interested in :)
 # 0:seqname 1:start 2:end 3:nbases 4:ambigs 5:polymer 6:numSeqs
