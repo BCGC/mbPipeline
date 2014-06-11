@@ -155,9 +155,9 @@ if int(nbasesafter)/int(nbases) <= 0.5 :
 
 # screen the sequences so we only keep the stuff in the region we are interested in :)
 # 0:seqname 1:start 2:end 3:nbases 4:ambigs 5:polymer 6:numSeqs
-os.system("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fasta+", name="+names+")\"")
+sysio("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fasta+", name="+names+")\"", True, False, False, False)
 
-summ = numpy.genfromtxt(fasta + '.summary', skiprows=1, dtype='str')
+summ = numpy.genfromtxt(summary, skiprows=1, dtype='str')
 end = map(int, summ[:,2])
 
 if numpy.percentile(end, 25) != numpy.percentile(end, 75):
