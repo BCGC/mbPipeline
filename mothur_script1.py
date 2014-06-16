@@ -2,7 +2,7 @@
 
 # mothur_script1.py
 # main driver for Mothur pipeline
-# Kira Vasquez and Randall Johnson
+# Kira Vasquez, Randall Johnson and Nikhil Gowda
 # BSP CCR Genetics Core at Frederick National Laboratory
 # Leidos Biomedical Research, Inc
 # Created September-ish 2013
@@ -30,9 +30,10 @@ summary = ""
 fasta = ""
 names = ""
 groups = ""
+taxonomy = ""
 
 ### set up function system call with updating summary/fasta/names/groups filename ###
-def sysio(cmd, updateSummary, updateFasta, updateNames, updateGroups):
+def sysio(cmd, updateSummary, updateFasta, updateNames, updateGroups, updateTax):
       global summary
       global fasta
       global names
@@ -48,6 +49,8 @@ def sysio(cmd, updateSummary, updateFasta, updateNames, updateGroups):
             names = out[out[0:out.rfind(".names")].rfind("\n")+1:out[out.rfind(".names"):len(out)].find("\n")+out.rfind(".names")]
       if updateGroups:
             groups = out[out[0:out.rfind(".groups")].rfind("\n")+1:out[out.rfind(".groups"):len(out)].find("\n")+out.rfind(".groups")]
+      if updateTax:
+            taxonomy = out[out[0:out.rfind(".taxonomy")].rfind("\n")+1:out[out.rfind(".taxonomy"):len(out)].find("\n")+out.rfind(".taxonomy")]
       return out
 
 
@@ -91,7 +94,7 @@ sysio("mothur \"#set.logfile(name=master.logfile, append=T);" +
 
 # check our sequences as of right now
 # 0:seqname 1:start 2:end 3:nbases 4:ambigs 5:polymer 6:numSeqs
-sysio("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fasta+", name="+names+")\"", True, False, False, False)
+sysio("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fasta+", name="+names+")\"", True, False, False, False, False)
 
 summ = numpy.genfromtxt(summary, skiprows=1, dtype='str')
 
@@ -120,7 +123,7 @@ os.system("mothur \"#unique.seqs(fasta="+fasta+", name="+names+")\"")
 
 fasta = fasta[0:fasta.find('fasta')] + 'unique.fasta'
 names = names[0:names.find('names')] + 'unique.names'
-out = sysio("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fasta+", name="+names+")\"", True, False, False, False)
+out = sysio("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fasta+", name="+names+")\"", True, False, False, False, False)
 out = out[out.find("97.5%-tile:")+12:len(out)]
 out = out[out.find("\t")+1:len(out)]
 out = out[out.find("\t")+1:len(out)]
@@ -132,7 +135,7 @@ os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
                     "align.seqs(fasta="+fasta+", reference=silva.bacteria.fasta, flip=F, processors=12)\"")
 
 fastacheck = fasta[0:fasta.find('fasta')] + 'align'
-out = sysio("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fastacheck+", name="+names+")\"", True, False, False, False)
+out = sysio("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fastacheck+", name="+names+")\"", True, False, False, False, False)
 out = out[out.find("97.5%-tile:")+12:len(out)]
 out = out[out.find("\t")+1:len(out)]
 out = out[out.find("\t")+1:len(out)]
@@ -143,7 +146,7 @@ if int(nbasesafter)/int(nbases) <= 0.5 :
       os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
                     "align.seqs(fasta="+fasta+", reference=silva.bacteria.fasta, flip=T, processors=12)\"")
       fastacheck = fasta[0:fasta.find('fasta')] + 'align'
-      out = sysio("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fastacheck+", name="+names+")\"", True, False, False, False)
+      out = sysio("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fastacheck+", name="+names+")\"", True, False, False, False, False)
       out = out[out.find("97.5%-tile:")+12:len(out)]
       out = out[out.find("\t")+1:len(out)]
       out = out[out.find("\t")+1:len(out)]
@@ -155,7 +158,7 @@ if int(nbasesafter)/int(nbases) <= 0.5 :
 
 # screen the sequences so we only keep the stuff in the region we are interested in :)
 # 0:seqname 1:start 2:end 3:nbases 4:ambigs 5:polymer 6:numSeqs
-sysio("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fasta+", name="+names+")\"", True, False, False, False)
+sysio("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fasta+", name="+names+")\"", True, False, False, False, False)
 
 summ = numpy.genfromtxt(summary, skiprows=1, dtype='str')
 end = map(int, summ[:,2])
@@ -226,12 +229,14 @@ names = names[0:names.find('names')] + 'pick.names'
 groups = groups[0:groups.find('groups')] + 'pick.groups'
 
 # classify sequences using given taxonomy trainset
-os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
+os.system()
+out = sysio("mothur \"#set.logfile(name=master.logfile, append=T);" +
           "classify.seqs(fasta="+fasta+", name="+names+", group="+groups+
-          ", template=trainset7_112011.pds.fasta, taxonomy=trainset7_112011.pds.tax, cutoff=80, processors=12)\"")
+          ", template=trainset7_112011.pds.fasta, taxonomy=trainset7_112011.pds.tax, cutoff=80, processors=12)\"", False, False, False, False, True)
 
-taxonomy = fasta[0:fasta.find('fasta')] + 'pds.taxonomy'
-accnos = fasta[0:fasta.find('fasta')] + 'pds.flip.accnos'
+
+#taxonomy = fasta[0:fasta.find('fasta')] + 'pds.taxonomy'
+#accnos = fasta[0:fasta.find('fasta')] + 'pds.flip.accnos'
 
 # remove contaminant mitochondria/chloroplast sequences
 os.system("mothur \"#set.logfile(name=master.logfile, append=T);" + 
