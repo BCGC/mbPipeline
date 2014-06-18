@@ -520,9 +520,9 @@ f.close()
 
 ### Beta Diversity ###
 
-os.system("mothur \"#summary.shared(shared="+sharedold+", calc=thetayc)\"")
+out = sysio("mothur \"#summary.shared(shared="+sharedold+", calc=thetayc)\"", True, False, False, False, False)
 
-summary = sharedold + '.summary'
+#summary = sharedold + '.summary'
 
 os.system("cut -f2 "+summary+" > .temp_sample1.out")
 num_lines5 = sum(1 for line in open('.temp_sample1.out'))
