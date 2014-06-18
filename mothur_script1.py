@@ -38,6 +38,7 @@ def sysio(cmd, updateSummary, updateFasta, updateNames, updateGroups, updateTax)
       global fasta
       global names
       global groups
+      global taxonomy
       p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
       out = p.communicate()[0]
       p.wait()
@@ -229,7 +230,7 @@ names = names[0:names.find('names')] + 'pick.names'
 groups = groups[0:groups.find('groups')] + 'pick.groups'
 
 # classify sequences using given taxonomy trainset
-os.system()
+#os.system()
 out = sysio("mothur \"#set.logfile(name=master.logfile, append=T);" +
           "classify.seqs(fasta="+fasta+", name="+names+", group="+groups+
           ", template=trainset7_112011.pds.fasta, taxonomy=trainset7_112011.pds.tax, cutoff=80, processors=12)\"", False, False, False, False, True)
@@ -262,8 +263,9 @@ taxonomy = 'final.taxonomy'
 
 ### get sequence data ###
 
+os.system("rm .seq_data.out") #in case a prior file by this name existed
 os.system("mothur \"#set.logfile(name=master.logfile, append=T);" + 
-          "count.groups(group=final.groups)\" > .seq_data.out")
+          "count.groups(group="+groups+")\" > .seq_data.out")
 
 ### pull apart data in x.seq_data.out ###
 
