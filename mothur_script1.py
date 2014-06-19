@@ -320,9 +320,8 @@ if are_controls == 1:
       print "Warning: the following control samples have an unusually high number of sequences: " + str(ctrl_warn)
 
 
-f = open('.temp.numseqs', 'w')
-for i in range(0, len(nums)):
-      f.write(str(nums[i]) + " \n")
+
+
 f.close()
 
 f = open('.temp.locs', 'w')
@@ -330,7 +329,7 @@ for i in range(0, len(locs)):
       f.write(str(locs[i]) + " \n")
 f.close()
 
-low_warn = []
+low_warn = [] #This part grabs all samples with fewer than 3000 sequences
 for i in range(0, len(nums)):
       if float(nums[i]) < 3000:
       	   low_warn.append(locs[i])
@@ -346,25 +345,27 @@ for i in range(0, len(low_warn)):
 	      low_seq_nums.append(nums[j])
 print ""
 for i in range(0, len(low_warn)):
-      print low_warn[i] + " has " + low_seq_nums[i] + " sequences."
+      print low_warn[i] + " has " + low_seq_nums[i] + " sequences." #Prints those samples and their # of seqs
 
-
+#Following loop removes those found low sequences names and numbers from the orig lists
 for i in range(0, len(low_warn)):
       for j in range(0, len(nums)-1):
-      	   if locs[j] == low_warn[i]:
-	      locs.pop(j)
-	      nums.pop(j)
-highest = 0
+            if locs[j] == low_warn[i]:
+                  locs.pop(j)
+                  nums.pop(j)
+highest = 0 #This part finds the sample with the highest number of sequences
 for i in range(0, len(nums)):
-      if nums[i] > highest:
-      	   highest = nums[i]
+      if float(nums[i]) > float(highest):
+            highest = float(nums[i])
 lowest = highest
 
+#The following part finds the sample with the lowest number of sequences (which is consider the ideal lowest)
 for i in range(0, len(nums)):
-      if nums[i] < lowest:
-      	   lowest = nums[i]
+      if float(nums[i]) < lowest:
+      	   lowest = float(nums[i])
 	   ideal_loc = locs[i]
 print ""
+#Following asks the user what the lowest should be. Recomends the ideal lowest. (Should we just use the ideal lowest?)
 lowest = raw_input("We recommend that the lowest number of sequences should be " + lowest + " from " + ideal_loc + ". What would you like to set the lowest allowed number of sequences to? ")
 
 ### remove controls ###
