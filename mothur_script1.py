@@ -81,13 +81,13 @@ for f in sff:
                                 "sffinfo(sff="+x+".sff); " +
                                 "set.dir(input=.); " +
                                 "summary.seqs(fasta="+y+".fasta); " +
-                                "trim.flows(flow="+y+".flow, oligos=oligos.txt, pdiffs="+pdiffs+","+"bdiffs="+bdiffs+", processors=12)\"")
+                                "trim.flows(flow="+y+".flow, oligos=oligos.txt, pdiffs="+pdiffs+","+"bdiffs="+bdiffs+", processors="+nprocessors+")\"")
             os.system("cat "+y+".flow.files >> all.flow.files")
 
 
 flows = 'all.flow.files'
 sysio("mothur \"#set.logfile(name=master.logfile, append=T);" +
-                    "shhh.flows(file="+flows+", processors=12)\"", False, True, True, True)
+                    "shhh.flows(file="+flows+", processors="+nprocessors+")\"", False, True, True, True)
 
 #fasta = 'all.flow.shhh.fasta'
 #names = 'all.flow.shhh.names'
@@ -112,7 +112,7 @@ if tmp / summ.shape[0] > 0.2:
 # trim barcodes and primers, make sure everything is xxx bp long
 os.system("mothur \"#set.logfile(name=master.logfile, append=T); trim.seqs(fasta="+fasta+
           ", name="+names+", oligos=oligos.txt, pdiffs="+pdiffs+", bdiffs="+bdiffs+
-          ", maxhomop=8, minlength=200, flip=T processors=12)\"")
+          ", maxhomop=8, minlength=200, flip=T processors="+nprocessors+")\"")
 
 fasta = fasta[0:fasta.find('fasta')] + 'trim.fasta'
 names = names[0:names.find('names')] + 'trim.names'
@@ -133,7 +133,7 @@ nbases = out[0:out.find("\t")]
 # initial alignment
 # oops...If you didn't get them flipped in the correct direction - use flip=T
 os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
-                    "align.seqs(fasta="+fasta+", reference=silva.bacteria.fasta, flip=F, processors=12)\"")
+                    "align.seqs(fasta="+fasta+", reference=silva.bacteria.fasta, flip=F, processors="+nprocessors+")\"")
 
 fastacheck = fasta[0:fasta.find('fasta')] + 'align'
 out = sysio("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fastacheck+", name="+names+")\"", True, False, False, False, False)
@@ -145,7 +145,7 @@ nbasesafter = out[0:out.find("\t")]
 if int(nbasesafter)/int(nbases) <= 0.5 :
       print("Warning: Attempting to flip direction and re-allign sequences.")
       os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
-                    "align.seqs(fasta="+fasta+", reference=silva.bacteria.fasta, flip=T, processors=12)\"")
+                    "align.seqs(fasta="+fasta+", reference=silva.bacteria.fasta, flip=T, processors="+nprocessors+")\"")
       fastacheck = fasta[0:fasta.find('fasta')] + 'align'
       out = sysio("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fastacheck+", name="+names+")\"", True, False, False, False, False)
       out = out[out.find("97.5%-tile:")+12:len(out)]
@@ -170,7 +170,7 @@ end = str(int(numpy.percentile(end, 50)))
 
 os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
                     "screen.seqs(fasta="+fasta+", name="+names+", group="+groups+
-                                 ", end="+end+", optimize=start, criteria=95, processors=12)\"")
+                                 ", end="+end+", optimize=start, criteria=95, processors="+nprocessors+")\"")
 
 fasta = fasta[0:fasta.find('align')] + 'good.align'
 names = names[0:names.find('names')] + 'good.names'
@@ -181,7 +181,7 @@ os.system("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fa
 
 # filter the sequences so they all overlap the same region
 os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
-                    "filter.seqs(fasta="+fasta+", vertical=T, trump=., processors=12)\"")
+                    "filter.seqs(fasta="+fasta+", vertical=T, trump=., processors="+nprocessors+")\"")
 
 fasta = fasta[0:fasta.find('align')] + 'filter.fasta' ####################################
 print fasta
@@ -209,7 +209,7 @@ os.system("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fa
 
 # identify likely chimeras
 os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
-                    "chimera.uchime(fasta="+fasta+", name="+names+", group="+groups+", processors=12)\"")
+                    "chimera.uchime(fasta="+fasta+", name="+names+", group="+groups+", processors="+nprocessors+")\"")
 
 accnos = fasta[0:fasta.find('fasta')] + 'uchime.accnos'
 tmp = numpy.genfromtxt(accnos, dtype='str')
@@ -233,7 +233,7 @@ groups = groups[0:groups.find('groups')] + 'pick.groups'
 #os.system()
 out = sysio("mothur \"#set.logfile(name=master.logfile, append=T);" +
           "classify.seqs(fasta="+fasta+", name="+names+", group="+groups+
-          ", template=trainset7_112011.pds.fasta, taxonomy=trainset7_112011.pds.tax, cutoff=80, processors=12)\"", False, False, False, False, True)
+          ", template=trainset7_112011.pds.fasta, taxonomy=trainset7_112011.pds.tax, cutoff=80, processors="+nprocessors+")\"", False, False, False, False, True)
 
 
 #taxonomy = fasta[0:fasta.find('fasta')] + 'pds.taxonomy'
@@ -382,7 +382,7 @@ if are_controls == 1:
 ### OTUs ###
 
 os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
-          "dist.seqs(fasta="+fasta+", cutoff=0.15, processors=12)\"")
+          "dist.seqs(fasta="+fasta+", cutoff=0.15, processors="+nprocessors+")\"")
 
 dist = fasta[0:fasta.find('fasta')] + 'dist'
 
