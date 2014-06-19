@@ -334,7 +334,7 @@ for i in range(0, len(nums)):
       if float(nums[i]) < 3000:
       	   low_warn.append(locs[i])
 print ""
-print "Warning: the following samples have an unusually low number of sequences: " + str(low_warn)
+print "Warning: the following samples have an unusually low number of sequences, they will be thrown out: " + str(low_warn)
 
 ### user may choose to keep low-sequence samples ###
 
@@ -366,7 +366,7 @@ for i in range(0, len(nums)):
 	   ideal_loc = locs[i]
 print ""
 #Following asks the user what the lowest should be. Recomends the ideal lowest. (Should we just use the ideal lowest?)
-lowest = raw_input("We recommend that the lowest number of sequences should be " + lowest + " from " + ideal_loc + ". What would you like to set the lowest allowed number of sequences to? ")
+print("The lowest number of sequences will be set to " + lowest + " from " + ideal_loc + ".")
 
 ### remove controls ###
 
