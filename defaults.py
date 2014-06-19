@@ -92,3 +92,9 @@ try:
 except KeyError:
       min_stack_proprtion = 0.14
       print("Minimum stack proportion not provided, will default to 0.14!")
+
+try:
+      nprocessors = args['processors']
+except KeyError:
+      nprocessors = 1
+      print("Number of processors not provided, will default to 1!")
