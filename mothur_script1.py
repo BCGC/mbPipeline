@@ -288,12 +288,10 @@ for i in range(0, len(data)):
 
 ### print warnings, find optimal sequence size and save ctrl seqs to file ###
 
-are_controls = raw_input("Do you have controls? Enter 1 for 'yes' or 2 for 'no': ")
-are_controls = int(are_controls)
-if are_controls == 1:
+if arecontrols:
       ctrls = []
-      num_lines2 = sum(1 for line in open('.control.samples'))
-      f = open('.control.samples')
+      num_lines2 = sum(1 for line in open(controlsfile))
+      f = open(controlsfile)
       for i in range(0, num_lines2):
       	  ctrls.append(f.readline())
       f.close()

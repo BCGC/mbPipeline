@@ -33,6 +33,13 @@ try:
 except KeyError:
       raise Exception("Metadata file not propvided!")
 
+try:
+      controlsfile = args['controls']
+      arecontrols = True
+except KeyError:
+      arecontrols = False
+      print("Warning: No controls file was provided, assuming that there are none.")
+
 # link reference files to the current working directory
 try:
       REFPATH = args['refpath']
@@ -48,6 +55,7 @@ if os.path.isdir(REFPATH):
       os.system("ln -fs " + REFPATH + "/LookUp_Titanium.pat .")
       os.system("ln -fs " + REFPATH + "/silva.* .")
       os.system("ln -fs " + REFPATH + "/" + metadata + "")
+      os.system("ln -fs " + REFPATH + "/" +  controlsfile + "")
 else:
       raise Exception("Bad value for refpath.")
 
