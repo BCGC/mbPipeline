@@ -81,13 +81,13 @@ for f in sff:
                                 "sffinfo(sff="+x+".sff); " +
                                 "set.dir(input=.); " +
                                 "summary.seqs(fasta="+y+".fasta); " +
-                                "trim.flows(flow="+y+".flow, oligos=oligos.txt, pdiffs="+pdiffs+","+"bdiffs="+bdiffs+", processors="+nprocessors+")\"")
+                                "trim.flows(flow="+y+".flow, oligos=oligos.txt, pdiffs="+pdiffs+","+"bdiffs="+bdiffs+", processors="+str(nprocessors)+")\"")
             os.system("cat "+y+".flow.files >> all.flow.files")
 
 
 flows = 'all.flow.files'
 sysio("mothur \"#set.logfile(name=master.logfile, append=T);" +
-                    "shhh.flows(file="+flows+", processors="+nprocessors+")\"", False, True, True, True)
+                    "shhh.flows(file="+flows+", processors="+str(nprocessors)+")\"", False, True, True, True)
 
 #fasta = 'all.flow.shhh.fasta'
 #names = 'all.flow.shhh.names'
@@ -112,7 +112,7 @@ if tmp / summ.shape[0] > 0.2:
 # trim barcodes and primers, make sure everything is xxx bp long
 os.system("mothur \"#set.logfile(name=master.logfile, append=T); trim.seqs(fasta="+fasta+
           ", name="+names+", oligos=oligos.txt, pdiffs="+pdiffs+", bdiffs="+bdiffs+
-          ", maxhomop=8, minlength=200, flip=T processors="+nprocessors+")\"")
+          ", maxhomop=8, minlength=200, flip=T processors="+str(nprocessors)+")\"")
 
 fasta = fasta[0:fasta.find('fasta')] + 'trim.fasta'
 names = names[0:names.find('names')] + 'trim.names'
@@ -133,7 +133,7 @@ nbases = out[0:out.find("\t")]
 # initial alignment
 # oops...If you didn't get them flipped in the correct direction - use flip=T
 os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
-                    "align.seqs(fasta="+fasta+", reference=silva.bacteria.fasta, flip=F, processors="+nprocessors+")\"")
+                    "align.seqs(fasta="+fasta+", reference=silva.bacteria.fasta, flip=F, processors="+str(nprocessors)+")\"")
 
 fastacheck = fasta[0:fasta.find('fasta')] + 'align'
 out = sysio("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fastacheck+", name="+names+")\"", True, False, False, False, False)
@@ -145,7 +145,7 @@ nbasesafter = out[0:out.find("\t")]
 if int(nbasesafter)/int(nbases) <= 0.5 :
       print("Warning: Attempting to flip direction and re-allign sequences.")
       os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
-                    "align.seqs(fasta="+fasta+", reference=silva.bacteria.fasta, flip=T, processors="+nprocessors+")\"")
+                    "align.seqs(fasta="+fasta+", reference=silva.bacteria.fasta, flip=T, processors="+str(nprocessors)+")\"")
       fastacheck = fasta[0:fasta.find('fasta')] + 'align'
       out = sysio("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fastacheck+", name="+names+")\"", True, False, False, False, False)
       out = out[out.find("97.5%-tile:")+12:len(out)]
@@ -170,7 +170,7 @@ end = str(int(numpy.percentile(end, 50)))
 
 os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
                     "screen.seqs(fasta="+fasta+", name="+names+", group="+groups+
-                                 ", end="+end+", optimize=start, criteria=95, processors="+nprocessors+")\"")
+                                 ", end="+end+", optimize=start, criteria=95, processors="+str(nprocessors)+")\"")
 
 fasta = fasta[0:fasta.find('align')] + 'good.align'
 names = names[0:names.find('names')] + 'good.names'
@@ -181,7 +181,7 @@ os.system("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fa
 
 # filter the sequences so they all overlap the same region
 os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
-                    "filter.seqs(fasta="+fasta+", vertical=T, trump=., processors="+nprocessors+")\"")
+                    "filter.seqs(fasta="+fasta+", vertical=T, trump=., processors="+str(nprocessors)+")\"")
 
 fasta = fasta[0:fasta.find('align')] + 'filter.fasta' ####################################
 print fasta
@@ -209,7 +209,7 @@ os.system("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fa
 
 # identify likely chimeras
 os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
-                    "chimera.uchime(fasta="+fasta+", name="+names+", group="+groups+", processors="+nprocessors+")\"")
+                    "chimera.uchime(fasta="+fasta+", name="+names+", group="+groups+", processors="+str(nprocessors)+")\"")
 
 accnos = fasta[0:fasta.find('fasta')] + 'uchime.accnos'
 tmp = numpy.genfromtxt(accnos, dtype='str')
@@ -233,7 +233,7 @@ groups = groups[0:groups.find('groups')] + 'pick.groups'
 #os.system()
 out = sysio("mothur \"#set.logfile(name=master.logfile, append=T);" +
           "classify.seqs(fasta="+fasta+", name="+names+", group="+groups+
-          ", template=trainset7_112011.pds.fasta, taxonomy=trainset7_112011.pds.tax, cutoff=80, processors="+nprocessors+")\"", False, False, False, False, True)
+          ", template=trainset7_112011.pds.fasta, taxonomy=trainset7_112011.pds.tax, cutoff=80, processors="+str(nprocessors)+")\"", False, False, False, False, True)
 
 
 #taxonomy = fasta[0:fasta.find('fasta')] + 'pds.taxonomy'
@@ -339,8 +339,8 @@ print "Warning: the following samples have an unusually low number of sequences,
 low_seq_nums = []
 for i in range(0, len(low_warn)):
       for j in range(0, len(nums)-1):
-      	   if locs[j] == low_warn[i]:
-	      low_seq_nums.append(nums[j])
+            if locs[j] == low_warn[i]:
+                 low_seq_nums.append(nums[j])
 print ""
 for i in range(0, len(low_warn)):
       print low_warn[i] + " has " + low_seq_nums[i] + " sequences." #Prints those samples and their # of seqs
@@ -360,11 +360,11 @@ lowest = highest
 #The following part finds the sample with the lowest number of sequences (which is consider the ideal lowest)
 for i in range(0, len(nums)):
       if float(nums[i]) < lowest:
-      	   lowest = float(nums[i])
-	   ideal_loc = locs[i]
+            lowest = float(nums[i])
+            ideal_loc = locs[i]
 print ""
 #Following asks the user what the lowest should be. Recomends the ideal lowest. (Should we just use the ideal lowest?)
-print("The lowest number of sequences will be set to " + lowest + " from " + ideal_loc + ".")
+print("The lowest number of sequences will be set to " + str(lowest) + " from " + ideal_loc + ".")
 
 ### remove controls ###
 
@@ -380,7 +380,7 @@ if are_controls == 1:
 ### OTUs ###
 
 os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
-          "dist.seqs(fasta="+fasta+", cutoff=0.15, processors="+nprocessors+")\"")
+          "dist.seqs(fasta="+fasta+", cutoff=0.15, processors="+str(nprocessors)+")\"")
 
 dist = fasta[0:fasta.find('fasta')] + 'dist'
 
@@ -395,7 +395,7 @@ os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
 shared = list[0:list.find('list')] + 'shared'
 
 os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
-          "sub.sample(shared="+shared+", size="+lowest+")\"")
+          "sub.sample(shared="+shared+", size="+str(int(lowest))+")\"")
 
 sharedold = shared #FIGURE OUT WHATS HAPPENING HERE - THIS IS BAD NOMENCLATURE - but works for now ;)
 shared = list[0:shared.find('shared')] + '0.03.subsample.shared'
@@ -416,7 +416,7 @@ os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
 txshared = txlist[0:txlist.find('list')] + 'shared'
 
 os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
-          "sub.sample(shared="+txshared+", size="+lowest+")\"")
+          "sub.sample(shared="+txshared+", size="+str(int(lowest))+")\"")
 
 os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
           "classify.otu(list="+txlist+", name="+names+", taxonomy="+taxonomy+", label=1)\"")
