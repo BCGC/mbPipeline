@@ -318,15 +318,6 @@ if arecontrols:
       print "Warning: the following control samples have an unusually high number of sequences: " + str(ctrl_warn)
 
 
-
-
-f.close()
-
-f = open('.temp.locs', 'w')
-for i in range(0, len(locs)):
-      f.write(str(locs[i]) + " \n")
-f.close()
-
 low_warn = [] #This part grabs all samples with fewer than 3000 sequences
 for i in range(0, len(nums)):
       if float(nums[i]) < 3000:
@@ -334,14 +325,12 @@ for i in range(0, len(nums)):
 print ""
 print "Warning: the following samples have an unusually low number of sequences, they will be thrown out: " + str(low_warn)
 
-### user may choose to keep low-sequence samples ###
-
 low_seq_nums = []
 for i in range(0, len(low_warn)):
       for j in range(0, len(nums)-1):
             if locs[j] == low_warn[i]:
                  low_seq_nums.append(nums[j])
-print ""
+dprint ""
 for i in range(0, len(low_warn)):
       print low_warn[i] + " has " + low_seq_nums[i] + " sequences." #Prints those samples and their # of seqs
 
@@ -366,11 +355,16 @@ print ""
 #Following asks the user what the lowest should be. Recomends the ideal lowest. (Should we just use the ideal lowest?)
 print("The lowest number of sequences will be set to " + str(lowest) + " from " + ideal_loc + ".")
 
+f = open('.temp.locs', 'w')
+for i in range(0, len(locs)):
+      f.write(str(locs[i]) + " \n")
+f.close()
+
 ### remove controls ###
 
 if are_controls == 1:
       os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
-                "remove.groups(fasta="+fasta+", accnos="+x+".control.samples, group="+groups+
+                "remove.groups(fasta="+fasta+", accnos="+controlsfile+", group="+groups+
                 ", name="+names+".final.names, taxonomy="+taxonomy+")\"")
       fasta = fasta[0:fasta.find('fasta')] + 'pick.fasta'
       taxonomy = taxonomy[0:taxonomy.find('taxonomy')] + 'pick.taxonomy'
@@ -618,12 +612,24 @@ num_lines = sum(1 for line in open(metadata))
 f1 = open(metadata)
 lines = f1.readlines()
 f2 = open("final_data.txt", "w")
+#This for loop is terribly overcoded - but hey, it works ;)
 for i in range(0, num_lines) :
       tabs = lines[i].split("\t")
       tabs[len(tabs)-1] = tabs[len(tabs)-1][0:tabs[len(tabs)-1].find('\n')]
-      tabs.append(seqs[i])
-      tabs.append(adiv[i])
-      f2.write("\t".join(tabs)+"\n")
+      if i==0:
+            tabs.append(seqs[i])
+            tabs.append(adiv[i])
+            f2.write("\t".join(tabs)+"\n")
+      if i==1:
+            tabs.append(seqs[i])
+            tabs.append(adiv[i])
+            f2.write("\t".join(tabs)+"\n")
+      if i>=2:
+            for j in range(2, len(barcode)) :
+                  if barcode[j] in tabs: #only continues if barcode is found
+                        tabs.append(seqs[j])
+                        tabs.append(adiv[j])
+                        f2.write("\t".join(tabs)+"\n")
 f1.close()
 f2.close()
 
@@ -641,8 +647,6 @@ if not len(indvars) == 0 :
             tabs = lines[i].split("\t")
             tabs[len(tabs)-1] = tabs[len(tabs)-1][0:tabs[len(tabs)-1].find('\n')]
             tabs = [j for k, j in enumerate(tabs) if k not in columns_to_ignore]
-            tabs.append(seqs[i])
-            tabs.append(adiv[i])
             f2.write("\t".join(tabs)+"\n")
       f1.close()
       f2.close()
