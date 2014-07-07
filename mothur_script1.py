@@ -591,6 +591,7 @@ f.close()
 ### USING mbGRAPHCIS R PACKAGE TO PRODUCE GRAPHS ###
 seqs = ["meta", "nseqs"]
 adiv = ["meta", "adiv"]
+barcode = ["meta", "Barcode"]
 num_lines = sum(1 for line in open('.temp.numseqs'))
 
 f = open('.temp.numseqs')
@@ -601,6 +602,11 @@ f.close()
 f = open('.temp.adiv')
 for i in range(0, num_lines) :
     adiv.append(f.readline())
+f.close()
+
+f = open('.temp.locs')
+for i in range(0, num_lines) :
+    barcode.append(f.readline())
 f.close()
 
 for i in range(2, num_lines+2) :
