@@ -355,14 +355,9 @@ print ""
 #Following asks the user what the lowest should be. Recomends the ideal lowest. (Should we just use the ideal lowest?)
 print("The lowest number of sequences will be set to " + str(lowest) + " from " + ideal_loc + ".")
 
-f = open('.temp.locs', 'w')
-for i in range(0, len(locs)):
-      f.write(str(locs[i]) + " \n")
-f.close()
-
 ### remove controls ###
 
-if are_controls == 1:
+if are_controls == 1: #THIS HAS NOT YET BEEN TESTED#######################
       os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
                 "remove.groups(fasta="+fasta+", accnos="+controlsfile+", group="+groups+
                 ", name="+names+".final.names, taxonomy="+taxonomy+")\"")
@@ -370,6 +365,22 @@ if are_controls == 1:
       taxonomy = taxonomy[0:taxonomy.find('taxonomy')] + 'pick.taxonomy'
       names = names[0:names.find('names')] + 'pick.names'
       groups = groups[0:groups.find('groups')] + 'pick.groups'
+
+      for i in range(0, len(ctrls)):
+            for j in range(0, len(nums)-1):
+                  if locs[j] == ctrls[i]:
+                        locs.pop(j)
+                        nums.pop(j)
+
+f = open('.temp.locs', 'w')
+for i in range(0, len(locs)):
+      f.write(str(locs[i]) + " \n")
+f.close()
+f = open('.temp.nums', 'w')
+for i in range(0, len(nums)):
+      f.write(str(nums[i]) + " \n")
+f.close()
+
 
 ### OTUs ###
 
