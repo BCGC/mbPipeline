@@ -330,7 +330,7 @@ for i in range(0, len(low_warn)):
       for j in range(0, len(nums)-1):
             if locs[j] == low_warn[i]:
                  low_seq_nums.append(nums[j])
-dprint ""
+print ""
 for i in range(0, len(low_warn)):
       print low_warn[i] + " has " + low_seq_nums[i] + " sequences." #Prints those samples and their # of seqs
 
@@ -599,7 +599,7 @@ adiv = ["meta", "adiv"]
 barcode = ["meta", "Barcode"]
 num_lines = sum(1 for line in open('.temp.numseqs'))
 
-f = open('.temp.numseqs')
+f = open('.temp.nums')
 for i in range(0, num_lines) :
     seqs.append(f.readline())
 f.close()
@@ -654,6 +654,7 @@ if not len(indvars) == 0 :
             if lines[0].split("\t")[i] == "cat" or lines[0].split("\t")[i] == "cont" :
                   if not lines[1].split("\t")[i] in indvars :
                         columns_to_ignore.append(i)
+      num_lines=len(lines)
       for i in range(0, num_lines) :
             tabs = lines[i].split("\t")
             tabs[len(tabs)-1] = tabs[len(tabs)-1][0:tabs[len(tabs)-1].find('\n')]
