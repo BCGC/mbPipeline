@@ -1,2 +1,12 @@
-*.logfile
 *.tar.gz
+*.fasta
+*.fastq
+*.logfile
+*.temp
+*~
+^#*
+*.RData
+*.Rhistory
+*.map
+testing/ 
+Data/
