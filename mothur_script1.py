@@ -31,7 +31,7 @@ fasta = ""
 names = ""
 groups = ""
 taxonomy = ""
-
+align = ""
 ### set up function system call with updating summary/fasta/names/groups filename ###
 def sysio(cmd, updateSummary, updateFasta, updateNames, updateGroups, updateTax):
       global summary
