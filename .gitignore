@@ -1,8 +1,10 @@
 *.tar.gz
+*.zip
 *.fasta
 *.fastq
 *.logfile
 *.temp
+*.history
 *~
 ^#*
 *.RData
