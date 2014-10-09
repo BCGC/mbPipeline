@@ -8,5 +8,5 @@
 *.RData
 *.Rhistory
 *.map
-testing/ 
+testing/
 Data/
