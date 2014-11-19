@@ -1,10 +1,10 @@
 # defaults.py
 # set up defaults for the pipeline
-# Randall Johnson
+# Dominique Brown
+# adpted from Randall Johnson script
 # BSP CCR Genetics Core at Frederick National Laboratory
 # Leidos Biomedical Research, Inc
-# Created January 15, 2014
-# Last Modified January 17, 2014
+# Last Modified October 10, 2014
 
 ###### variables and defaults ######
 
@@ -26,7 +26,17 @@ except KeyError:
       print("Using default working directory.")
 except OSError:
       print("Invalid value for workdir, using default directory.")
+try:
+      files = args['files']
+except KeyError:
+      files = "stability.files"
+      print("sff files will default") 
 
+try:
+       project = args['project']
+except KeyError:
+       project = "MiSeq Pipeline"
+       print("Project Name: MiSeq Pipeline")
 try:
       nprocessors = args['processors']
 except KeyError:
@@ -151,47 +161,61 @@ except KeyError:
      groups1 = 'Mock'
      print("Groups1 not provided, will default to Mock file!")
 try:
+     taxonomy = args['taxonomy']
+except KeyError:
+     taxonomy = "trainset9_032012.pds.tax"
+try:
+     label = args['label']
+except KeyError:
+     label = "0.03"
+try:
+     label2 = args['label2']
+except KeyError:
+     label2 = "1"
+try:
       REFPATH = args['refpath']
 except KeyError:
       REFPATH = os.system("echo $MBREF")
       if REFPATH == 0 :
             REFPATH = "."
             print("Warning: Reference data path not specified! Will try and use default directory.")
+try:
+      pcrseqs_reference = args['pcrseqs_reference']
+except KeyError:
+      pcrseqs_reference = "silva.bacteria.fasta"
+try:
+     classifyseqs_reference = args['classifyseqs_reference']
+except KeyError:
+     classifyseqs_reference = "trainset9_032012.pds.fasta"
+try:
+     seqerror_reference = args['seqerror_reference']
+except KeyError:
+     seqerror_reference = "HMP_MOCK.v35.fasta"
 
 if os.path.isdir(REFPATH):
-      os.system("ln -fs " + REFPATH + "/silva.bacteria.fasta .")
-      os.system("ln -fs " + REFPATH + "/trainset9_032012.pds.fasta .")
-      os.system("ln -fs " + REFPATH + "/HMP_MOCK.v35.fasta .")
-     # os.system("ln -fs " + REFPATH + "/" + metadata +"")
-      #os.system("ln -fs " + REFPATH + "/" +  controlsfile + "")
+      os.system("ln -fs " + REFPATH + "/+pcr.seqs_reference+ .")
+      os.system("ln -fs " + REFPATH + "/+classify.seqs_reference+ .")
+      os.system("ln -fs " + REFPATH + "/+seq.error_reference+ .")
 else:
       raise Exception("Bad value for refpath.")
-try:
-      DATAPATH = args['datapath']
-except KeyError:
-      DATAPATH = "."
-      print("Warning: Data path for sff files not specified! Will try and use default directory.")
 
-if not os.path.isdir(DATAPATH):
-      raise Exception("Bad value for datapath.")
-try:
-      proj = args['project']
-except KeyError:
-      raise Exception("Missing project name!")
-      
-try:
-      metadata = args['metadata']
-except KeyError:
-<<<<<<< Updated upstream
-      min_stack_proportion = "0.14"
-      print("Minimum stack proportion not provided, will default to 0.14!")
-=======
-      raise Exception("Metadata file not propvided!")
->>>>>>> Stashed changes
 
-try:
-     controlsfile = args['controls']
-     arecontrols = True
-except KeyError:
-     arecontrols = False
-     print("Warning: No controls file was provided, assuming that there are none.")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
