@@ -164,14 +164,17 @@ try:
      taxonomy = args['taxonomy']
 except KeyError:
      taxonomy = "trainset9_032012.pds.tax"
+     print("taxonomy is not provided, will default")
 try:
      label = args['label']
 except KeyError:
      label = "0.03"
+     print("label is not provided, will default to .03")
 try:
      label2 = args['label2']
 except KeyError:
-     label2 = "1"
+     label2 ="1"
+     print("label2 is not provided, will default to 1")
 try:
       REFPATH = args['refpath']
 except KeyError:
@@ -183,15 +186,17 @@ try:
       pcrseqs_reference = args['pcrseqs_reference']
 except KeyError:
       pcrseqs_reference = "silva.bacteria.fasta"
+      print("pcrseqs_reference is not provided, will default")
 try:
      classifyseqs_reference = args['classifyseqs_reference']
 except KeyError:
      classifyseqs_reference = "trainset9_032012.pds.fasta"
+     print("classifyseqs_reference is not provided, will default")
 try:
      seqerror_reference = args['seqerror_reference']
 except KeyError:
      seqerror_reference = "HMP_MOCK.v35.fasta"
-
+     print("seqerror_reference is not provided, will default")
 if os.path.isdir(REFPATH):
       os.system("ln -fs " + REFPATH + "/+pcr.seqs_reference+ .")
       os.system("ln -fs " + REFPATH + "/+classify.seqs_reference+ .")
