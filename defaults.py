@@ -203,6 +203,48 @@ if os.path.isdir(REFPATH):
       os.system("ln -fs " + REFPATH + "/+seq.error_reference+ .")
 else:
       raise Exception("Bad value for refpath.")
+# pdiffs
+#try:
+ #     pdiffs = args['pdiffs']
+#except KeyError:
+     # pdiffs = '2'
+
+# bdiffs
+#try:
+#      bdiffs = args['bdiffs']
+#except KeyError:
+#      bdiffs = '1'
+
+#try:
+#      indvars = args['indvars']
+ #     if not type(indvars) is list:
+  #          print("Warning: indvars is not a list, will use all independent variables in metadata (cat. and cont.) for graphing!")
+#except KeyError:
+ #     indvars = []
+  #    print("Will use all independent variables in metadata (cat. and cont.) for graphing!")
+
+#try:
+ #     min_stack_proportion = args['min_stack_proportion']
+#except KeyError:
+ #     min_stack_proprtion = 0.14
+#      print("Minimum stack proportion not provided, will default to 0.14!")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
