@@ -1,4 +1,4 @@
 mbPipeline
 ==========
 
-Scripts for the 454 Microbiome Pipeline
+Scripts for the 454 and MiSEQ Microbiome Pipelines
