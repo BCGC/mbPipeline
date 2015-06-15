@@ -68,12 +68,11 @@ os.chdir('testing')
 os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
                     "make.contigs(file="+files+", processors="+str(nprocessors)+")\"")  
 
+
 fasta = files[0:files.find('files')] + 'trim.contigs.fasta'                   
 groups = files[0:files.find('files')] + 'contigs.groups' 
 print fasta
-print groups                  
-
-
+print groups                
 
 ########
 #take care of any irregular lengths
@@ -110,6 +109,7 @@ count=fasta[0:fasta.find('unique.fasta')] + 'count_table'
 print count
 
 os.system("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+count+")\"")
+
 
 
 
@@ -237,13 +237,17 @@ print column
 
 os.system("mothur \"#set.logfile(name=master.logfile, append=T); cluster(column="+column+", count="+count+")\"")     #runs well
 list=fasta[0:fasta.find('fasta')] + 'an.unique_list.list'
-
+print list
 
 
 os.system("mothur \"#set.logfile(name=master.logfile, append=T); make.shared(list="+list+", count="+count+", label=0.03)\"")
 shared=fasta[0:fasta.find('fasta')] + 'an.unique_list.shared'
 print shared
 os.system("mothur \"#set.logfile(name=master.logfile, append=T); rarefaction.single(shared="+shared+")\"")
+print shared
+
+#os.system("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta = "+shared+")\"") # need fixed
+
 
 
 
@@ -268,6 +272,7 @@ os.system("mothur \"#set.logfile(name=master.logfile, append=T); cluster(column=
 
 #we want to know how many sequences are in each OTU from each group 
 os.system("mothur \"#set.logfile(name=master.logfile, append=T); make.shared(list="+list+", count="+count+", label="+label+")\"")
+#os.system("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta = stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.an.unique_list.fasta)\"") 
 
 
 
@@ -294,6 +299,8 @@ os.system("mothur \"#set.logfile(name=master.logfile, append=T); make.shared(lis
 #We also want to know who these OTUs are 
 os.system("mothur \"#set.logfile(name=master.logfile, append=T); classify.otu(list="+list+", count="+count+", taxonomy="+taxonomy2+", label="+label2+")\"")
 
+#summary="stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.an.unique_list.0.16.cons.tax.summary"
+
 
 
 ##########################################################
@@ -307,9 +314,13 @@ os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
         "collect.single(shared="+shared+", calc=chao-invsimpson, freq=100)\"")
 
 sample_list = []
-os.system("grep -l '0.03' *.invsimpson > .sample_list.out")
+os.system("grep -l '0.03' *.invsimpson > .sample_list.out")  
 num_lines3 = sum(1 for line in open('.sample_list.out'))
 f = open('.sample_list.out')
+
+for line in f:
+      print line
+
 for i in range(0, num_lines3):
       sample_list.append(f.readline())
       sample_list[i] = sample_list[i][:-1]
@@ -317,10 +328,13 @@ for i in range(0, num_lines3):
 temp1 = []
 summ = 0
 invsimpson = []
+
 for i in range(0, num_lines3):
-      os.system("cut -f2 -s "+sample_list[i]+" | tail -n 5 > .temp_nums.out")
+      os.system("cut -f2 -s "+sample_list[i]+" | tail -n 5 > .temp_nums.out")  
       num_lines4 = sum(1 for line in open('.temp_nums.out'))
       f = open('.temp_nums.out')
+      for hi in f:
+          print f
       for j in range(0, num_lines4):
       	  temp1.append(f.readline())
       for z in range(0, num_lines4):
@@ -328,245 +342,241 @@ for i in range(0, num_lines3):
       temp1 = []
       invsimpson.append(summ/num_lines4)
       summ = 0
-      f.close()
+f.close()
 
-f = open('.temp.adiv', 'w')
+
+f = open('.temp.adiv', 'w')   ###find .temp....
 for i in range(0, len(invsimpson)):
       f.write(str(invsimpson[i]) + ' \n')
+f.close()
+
+      
+#sample_list = []
+#os.system("grep -l '0.03' "+x+"*.invsimpson > "+x+".sample_list.out")
+#num_lines3 = sum(1 for line in open(''+x+'.sample_list.out'))
+#f = open(''+x+'.sample_list.out')
+
+#for i in range(0, num_lines3):
+#       sample_list.append(f.readline())
+#       sample_list[i] = sample_list[i][:-1]
+
+#temp1 = []
+#summ = 0
+#invsimpson = []
+
+#for i in range(0, num_lines3):
+#       os.system("cut -f2 -s "+sample_list[i]+" | tail -n 5 > "+x+".temp_nums.out")
+#       num_lines4 = sum(1 for line in open(''+x+'.temp_nums.out'))
+#       f = open(''+x+'.temp_nums.out')
+#       for j in range(0, num_lines4):
+#       	  temp1.append(f.readline())
+#       for z in range(0, num_lines4):
+#       	  summ += float(temp1[z])
+#       temp1 = []
+#       invsimpson.append(summ/num_lines4)
+#       summ = 0
+      
+#f = open(''+x+'.temp.adiv', 'w')
+ #for i in range(0, len(invsimpson)):
+  #     f.write(str(invsimpson[i]) + " \n")
       
 ### Generating Graphics Data File ###
 #NEED TO DEVELOP A WAY TO HANDLE METADATA - FOR NOW MANUAL INPUT
-seqs = ["meta", "nseqs"]
-adiv = ["meta", "adiv"]
-barcode = ["meta", "Barcode"]
-variables = []
-num_lines = sum(1 for line in open('.temp.numseqs'))
-print "You must enter at least one set of independent categorical or continuous variables that describe each sample in order to generate plots!"
-cont = "1"
 
-while cont == "1":
-      newvar = raw_input("Enter the name describing the first variable (eg. gender, age, etc.): ")
-      newvarlist = []
-      success = False
-      while not success:
-            type = raw_input("Enter the type of variable that it is, cat for catergorical or cont for continuous (eg. gender is cat, age is cont): ")      
-            if "cat" in type:
-                  newvarlist.append('cat')
-                  success = True
-            if "cont" in type:
-                  newvarlist.append('cont')
-                  success = True
-      newvarlist.append(newvar)
-      f = open('.temp.locs')
-      for i in range(0, num_lines) :
-            bcode = f.readline()
-            value = raw_input("Enter value of " +newvar+ " describing " +bcode+ "(be sure to be consistent!) : ")
-            newvarlist.append(value)
-      f.close()
-      variables.append(newvarlist)
-      print ""
-      print "Entry for variable completed."
-      print ""
-      cont = raw_input("Are there more variables to define and enter? Enter 1 for yes or 2 for no: ")
+#seqs = ["meta", "nseqs"]
+#adiv = ["meta", "adiv"]
+#barcode = ["meta", "Barcode"]
+#variables = []
+#num_lines = sum(1 for line in open('.temp.numseqs'))   ###find .temp....
+#print "You must enter at least one set of independent categorical or continuous variables that describe each sample in order to generate plots!"
+#cont = "1"
 
-f = open('.temp.numseqs')
-for i in range(0, num_lines) :
-    seqs.append(f.readline())
-f.close()
+#while cont == "1":
+ #     newvar = raw_input("Enter the name describing the first variable (eg. gender, age, etc.): ")
+  #    newvarlist = []
+   #   success = False
+    #  while not success:
+#            type = raw_input("Enter the type of variable that it is, cat for catergorical or cont for continuous (eg. gender is cat, age is cont): ")      
+ #           if "cat" in type:
+  #                newvarlist.append('cat')
+   #               success = True
+    #        if "cont" in type:
+     #             newvarlist.append('cont')
+      #            success = True
+#      newvarlist.append(newvar)
+ #     f = open('.temp.locs')   ###find .temp....
+  #    for i in range(0, num_lines) :
+   #         bcode = f.readline()
+    #        value = raw_input("Enter value of " +newvar+ " describing " +bcode+ "(be sure to be consistent!) : ")
+    #        newvarlist.append(value)
+ #     f.close()
+  #    variables.append(newvarlist)
+   #   print ""
+    #  print "Entry for variable completed."
+     # print ""
+ #     cont = raw_input("Are there more variables to define and enter? Enter 1 for yes or 2 for no: ")
 
-f = open('.temp.adiv')
-for i in range(0, num_lines) :
-    adiv.append(f.readline())
-f.close()
+#f = open('.temp.numseqs')   ###find .temp....
+#for i in range(0, num_lines) :
+#    seqs.append(f.readline())
 
-f = open('.temp.locs')
-for i in range(0, num_lines) :
-    barcode.append(f.readline())
-f.close()
+#f.close()
 
-for i in range(2, num_lines+2) :
-    barcode[i] = barcode[i][:-2]
-    adiv[i] = adiv[i][:-2]
-    seqs[i] = seqs[i][:-2]
+#f = open('.temp.adiv')    ###find .temp....
+#for i in range(0, num_lines) :
+#    adiv.append(f.readline())
 
-f = open('graphics_data.txt', 'w')
-for i in range(0, num_lines+2):
-      f.write(barcode[i]+"\t"+seqs[i]+"\t"+adiv[i]+"\t")
-      for j in range(0, len(variables)):
-            f.write(variables[j][i]+"\t")
-      f.write("\n")
-f.close()
+#f.close()
+
+#f = open('.temp.locs')    ###find .temp....
+#for i in range(0, num_lines) :
+#    barcode.append(f.readline())
+
+#f.close()
+
+#for i in range(2, num_lines+2) :
+#    barcode[i] = barcode[i][:-2]
+#    adiv[i] = adiv[i][:-2]
+ #   seqs[i] = seqs[i][:-2]
+
+#f = open('graphics_data.txt', 'w')
+#for i in range(0, num_lines+2):
+ #     f.write(barcode[i]+"\t"+seqs[i]+"\t"+adiv[i]+"\t")
+ #     for j in range(0, len(variables)):
+  #          f.write(variables[j][i]+"\t")
+#      f.write("\n")
+
+#f.close()
 
  ### beta diversity ###
 
-if are_controls == 1:
-      os.system("mothur \"#summary.shared(shared="+x+".final.pick.an.shared, calc=thetayc)\"")
 
-      os.system("cut -f2 "+x+".final.pick.an.shared.summary > "+x+".temp_sample1.out")
-      num_lines5 = sum(1 for line in open(''+x+'.temp_sample1.out'))
-      sample1 = []
-      f = open(''+x+'.temp_sample1.out')
-      for i in range(0, num_lines5):
-       	  sample1.append(f.readline())
-      f.close()
-       
-      for i in range(0, len(sample1)):
-       	  sample1[i] = sample1[i][:-1]
-      sample1[0] = "sample1"
+os.system("mothur \"#summary.shared(shared="+shared+", calc=thetayc)\"")
 
-      os.system("cut -f3 "+x+".final.pick.an.shared.summary > "+x+".temp_sample2.out")
-      sample2 = []
-      f = open(''+x+'.temp_sample2.out')
-      for i in range(0, num_lines5):
-       	  sample2.append(f.readline())
-      f.close()
-      for i in range(0, len(sample2)):
-       	  sample2[i] = sample2[i][:-1]
-      sample2[0] = "sample2"
+summary ="stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.an.unique_list.summary"    ####find correct summary file
 
-      os.system("cut -f5 "+x+".final.pick.an.shared.summary > "+x+".temp_bdiv.out")
-      bdiv = []
-      f = open(''+x+'.temp_bdiv.out')
-      for i in range(0, num_lines5):
-       	  bdiv.append(f.readline())
-      f.close()
-      for i in range(0, len(bdiv)):
-       	  bdiv[i] = bdiv[i][:-1]
-      bdiv[0] = "bdiv"
+os.system("cut -f2 "+summary+" > .temp_sample1.out")     
+num_lines5 = sum(1 for line in open('.temp_sample1.out'))
+sample1 = []
+f = open('.temp_sample1.out')
 
-      os.system("cut -f6 "+x+".final.pick.an.shared.summary > "+x+".temp_cmin.out")
-      cmin = []
-      f = open(''+x+'.temp_cmin.out')
-      for i in range(0, num_lines5):
-       	  cmin.append(f.readline())
-      f.close()
-       
-      for i in range(0, len(cmin)):
-       	  cmin[i] = cmin[i][:-1]
-      
-      for i in range(1, len(cmin)):
-       	  cmin[i] = 1 - float(cmin[i])
-      
-      for i in range(1, len(cmin)):
-       	  cmin[i] = str(cmin[i])
-      cmin[0] = "cmin"
+for i in range(0, num_lines5):
+      sample1.append(f.readline())
+   ###   f.close()
 
-      os.system("cut -f7 "+x+".final.pick.an.shared.summary > "+x+".temp_cmax.out")
-      cmax = []
-      f = open(''+x+'.temp_cmax.out')
-      for i in range(0, num_lines5):
-       	  cmax.append(f.readline())
-      f.close()
-      
-      for i in range(0, len(cmax)):
-       	  cmax[i] = cmax[i][:-1]
-       
-      for i in range(1, len(cmax)):
-       	  cmax[i] = 1 - float(cmax[i])
+for i in range(0, len(sample1)):
+      sample1[i] = sample1[i][:-1]
 
-      for i in range(1, len(cmax)):
-       	  cmax[i] = str(cmax[i])
-      cmax[0] = "cmax"
+sample1[0] = "sample1"
 
- if are_controls != 1:
-       os.system("mothur \"#summary.shared(shared="+x+".final.an.shared, calc=thetayc)\"")
+os.system("cut -f3 "+summary+" > .temp_sample2.out")     
+sample2 = []
 
-       os.system("cut -f2 "+x+".final.an.shared.summary > "+x+".temp_sample1.out")
-       num_lines5 = sum(1 for line in open(''+x+'.temp_sample1.out'))
-       sample1 = []
-       f = open(''+x+'.temp_sample1.out')
-       for i in range(0, num_lines5):
-       	  sample1.append(f.readline())
-       f.close()
-       for i in range(0, len(sample1)):
-       	  sample1[i] = sample1[i][:-1]
-       sample1[0] = "sample1"
+f = open('.temp_sample2.out')
 
-       os.system("cut -f3 "+x+".final.an.shared.summary > "+x+".temp_sample2.out")
-       sample2 = []
-       f = open(''+x+'.temp_sample2.out')
-       for i in range(0, num_lines5):
-       	  sample2.append(f.readline())
-       f.close()
-       for i in range(0, len(sample2)):
-       	  sample2[i] = sample2[i][:-1]
-       sample2[0] = "sample2"
+for i in range(0, num_lines5):
+      sample2.append(f.readline())
+#      f.close()
 
-       os.system("cut -f5 "+x+".final.an.shared.summary > "+x+".temp_bdiv.out")
-       bdiv = []
-       f = open(''+x+'.temp_bdiv.out')
-       for i in range(0, num_lines5):
-       	  bdiv.append(f.readline())
-       f.close()
-       for i in range(0, len(bdiv)):
-       	  bdiv[i] = bdiv[i][:-1]
-       bdiv[0] = "bdiv"
+for i in range(0, len(sample2)):
+      sample2[i] = sample2[i][:-1]
 
-       os.system("cut -f6 "+x+".final.an.shared.summary > "+x+".temp_cmin.out")
-       cmin = []
-       f = open(''+x+'.temp_cmin.out')
-       for i in range(0, num_lines5):
-       	  cmin.append(f.readline())
-       f.close()
-       for i in range(0, len(cmin)):
-       	  cmin[i] = cmin[i][:-1]
-       for i in range(1, len(cmin)):
-       	  cmin[i] = 1 - float(cmin[i])
-       for i in range(1, len(cmin)):
-       	  cmin[i] = str(cmin[i])
-       cmin[0] = "cmin"
+sample2[0] = "sample2"
 
-       os.system("cut -f7 "+x+".final.an.shared.summary > "+x+".temp_cmax.out")
-       cmax = []
-       f = open(''+x+'.temp_cmax.out')
-       for i in range(0, num_lines5):
-       	  cmax.append(f.readline())
-       f.close()
-       for i in range(0, len(cmax)):
-       	  cmax[i] = cmax[i][:-1]
-       for i in range(1, len(cmax)):
-       	  cmax[i] = 1 - float(cmax[i])
-       for i in range(1, len(cmax)):
-       	  cmax[i] = str(cmax[i])
-       cmax[0] = "cmax"
+os.system("cut -f5 "+summary+" > .temp_bdiv.out")   
+bdiv = []
+f = open('.temp_bdiv.out')
 
- with open(''+x+'.beta_data.out', 'w') as f:
-       for f1, f2, f3, f4, f5 in zip(sample1, sample2, bdiv, cmin, cmax):
-       	  f.write(f1+"\t"+f2+"\t"+f3+"\t"+f4+"\t"+f5+"\n")
- f.close()
+for i in range(0, num_lines5):
+      bdiv.append(f.readline())
+#      f.close()
+
+for i in range(0, len(bdiv)):
+      bdiv[i] = bdiv[i][:-1]
+
+bdiv[0] = "bdiv"
+
+os.system("cut -f7 "+summary+" > .temp_cmin.out")   
+cmin = []
+f = open('.temp_cmin.out')
+
+for i in range(0, num_lines5):
+      cmin.append(f.readline())
+#f.close()
+
+for i in range(0, len(cmin)):
+      cmin[i] = cmin[i][:-1]
+
+for i in range(1, len(cmin)):
+      cmin[i] = 1 - float(cmin[i])
+
+for i in range(1, len(cmin)):
+      cmin[i] = str(cmin[i])
+
+cmin[0] = "cmin"
+
+os.system("cut -f6 "+summary+" > "".temp_cmax.out") 
+cmax = []
+f = open('.temp_cmax.out')  
+
+for i in range(0, num_lines5):
+      cmax.append(f.readline())
+
+f.close()
+
+for i in range(0, len(cmax)):
+      cmax[i] = cmax[i][:-1]
+
+for i in range(1, len(cmax)):
+      cmax[i] = 1 - float(cmax[i])
+
+for i in range(1, len(cmax)):
+      cmax[i] = str(cmax[i])
+
+cmax[0] = "cmax"
+
+with open('beta_data.out', 'w') as f:                   
+      for f1, f2, f3, f4, f5 in zip(sample1, sample2, bdiv, cmin, cmax):
+            f.write(f1+"\t"+f2+"\t"+f3+"\t"+f4+"\t"+f5+"\n")
+#f.close()
+
+
+
+
+
 
 ### USING mbGRAPHCIS R PACKAGE TO PRODUCE GRAPHS ###
 seqs = ["meta", "nseqs"]
 adiv = ["meta", "adiv"]
-num_lines = sum(1 for line in open('.temp.numseqs'))
+#num_lines = sum(1 for line in open('.temp.numseqs'))
 
-f = open('.temp.numseqs')
-for i in range(0, num_lines) :
-    seqs.append(f.readline())
-f.close()
+#f = open('.temp.numseqs')    ## find 
+#for i in range(0, num_lines) :
+ #   seqs.append(f.readline())
+#f.close()
 
-f = open('.temp.adiv')
+f = open('.temp.adiv')   
 for i in range(0, num_lines) :
     adiv.append(f.readline())
-f.close()
+#f.close()
 
 for i in range(2, num_lines+2) :
     barcode[i] = barcode[i][:-2]
     adiv[i] = adiv[i][:-2]
     seqs[i] = seqs[i][:-2]
 
-num_lines = sum(1 for line in open(metadata))
-f1 = open(metadata)
-lines = f1.readlines()
-f2 = open("final_data.txt", "w")
+#num_lines = sum(1 for line in open(metadata))
+#f1 = open(metadata)
+#lines = f1.readlines()
+#f2 = open("final_data.txt", "w")   
 for i in range(0, num_lines) :
       tabs = lines[i].split("\t")
       tabs[len(tabs)-1] = tabs[len(tabs)-1][0:tabs[len(tabs)-1].find('\n')]
       tabs.append(seqs[i])
       tabs.append(adiv[i])
       f2.write("\t".join(tabs)+"\n")
-f1.close()
-f2.close()
+#f1.close()
+#f2.close()
 
 if not len(indvars) == 0 :
       f1 = open("final_data.txt")
@@ -589,12 +599,13 @@ if not len(indvars) == 0 :
       f2.close()
 else:
       import shutil 
-      shutil.copy2("final_data.txt", "mb_graphics_data.txt")
+      shutil.copy2("final_data.txt", "mb_graphics_data.txt")   
 
-import inspect
-filename = inspect.getframeinfo(inspect.currentframe()).filename
-path = os.path.dirname(os.path.abspath(filename))      
-os.system("Rscript "+path+"graphall.R "+txconsensus+" "+txshared+" "+min_stack_proportion+"")
+#import inspect
+#filename = inspect.getframeinfo(inspect.currentframe()).filename
+#path = os.path.dirname(os.path.abspath(filename))      
+
+os.system("Rscript graphall.R "+taxonomy+" "+shared+" "+min_stack_proportion+"")
 
 #########os.system("Rscript graphall.R "+txconsensus+" "+txshared+" "+min_stack_proportion+"")
 
@@ -613,6 +624,152 @@ os.system("Rscript "+path+"graphall.R "+txconsensus+" "+txshared+" "+min_stack_p
 
 
 
+
+
+
+
+
+
+
+
+
+
+#if are_controls == 1:
+ #    os.system("mothur \"#summary.shared(shared="+x+".final.pick.an.shared, calc=thetayc)\"")
+
+  #   os.system("cut -f2 "+x+".final.pick.an.shared.summary > "+x+".temp_sample1.out")
+   #  num_lines5 = sum(1 for line in open(''+x+'.temp_sample1.out'))
+#     sample1 = []
+#     f = open(''+x+'.temp_sample1.out')
+#     for i in range(0, num_lines5):
+#         sample1.append(f.readline())
+#     f.close()
+       
+#     for i in range(0, len(sample1)):
+#         sample1[i] = sample1[i][:-1]
+ #        sample1[0] = "sample1"
+
+#     os.system("cut -f3 "+x+".final.pick.an.shared.summary > "+x+".temp_sample2.out")
+#     sample2 = []
+#     f = open(''+x+'.temp_sample2.out')
+#     for i in range(0, num_lines5):
+#         sample2.append(f.readline())
+#     f.close()
+#     for i in range(0, len(sample2)):
+#         sample2[i] = sample2[i][:-1]
+#         sample2[0] = "sample2"
+
+#     os.system("cut -f5 "+x+".final.pick.an.shared.summary > "+x+".temp_bdiv.out")
+#      bdiv = []
+#      f = open(''+x+'.temp_bdiv.out')
+#      for i in range(0, num_lines5):
+#       	  bdiv.append(f.readline())
+#      f.close()
+#      for i in range(0, len(bdiv)):
+#       	  bdiv[i] = bdiv[i][:-1]
+#      bdiv[0] = "bdiv"
+
+#      os.system("cut -f6 "+x+".final.pick.an.shared.summary > "+x+".temp_cmin.out")
+#      cmin = []
+#      f = open(''+x+'.temp_cmin.out')
+#      for i in range(0, num_lines5):
+#       	  cmin.append(f.readline())
+#      f.close()
+       
+#      for i in range(0, len(cmin)):
+#       	  cmin[i] = cmin[i][:-1]
+      
+#      for i in range(1, len(cmin)):
+#       	  cmin[i] = 1 - float(cmin[i])
+#      
+#      for i in range(1, len(cmin)):
+#       	  cmin[i] = str(cmin[i])
+#      cmin[0] = "cmin"
+
+#      os.system("cut -f7 "+x+".final.pick.an.shared.summary > "+x+".temp_cmax.out")
+#      cmax = []
+#      f = open(''+x+'.temp_cmax.out')
+#      for i in range(0, num_lines5):
+#       	  cmax.append(f.readline())
+#      f.close()
+      
+#      for i in range(0, len(cmax)):
+#       	  cmax[i] = cmax[i][:-1]
+       
+#      for i in range(1, len(cmax)):
+#       	  cmax[i] = 1 - float(cmax[i])
+
+ #     for i in range(1, len(cmax)):
+ #      	  cmax[i] = str(cmax[i])
+#      cmax[0] = "cmax"
+
+# if are_controls != 1:
+ #      os.system("mothur \"#summary.shared(shared="+x+".final.an.shared, calc=thetayc)\"")
+
+#       os.system("cut -f2 "+x+".final.an.shared.summary > "+x+".temp_sample1.out")
+#       num_lines5 = sum(1 for line in open(''+x+'.temp_sample1.out'))
+#       sample1 = []
+#       f = open(''+x+'.temp_sample1.out')
+#       for i in range(0, num_lines5):
+#       	  sample1.append(f.readline())
+#       f.close()
+#       for i in range(0, len(sample1)):
+#       	  sample1[i] = sample1[i][:-1]
+#       sample1[0] = "sample1"
+
+
+#       os.system("cut -f3 "+x+".final.an.shared.summary > "+x+".temp_sample2.out")
+ #      sample2 = []
+#       f = open(''+x+'.temp_sample2.out')
+#       for i in range(0, num_lines5):
+#       	  sample2.append(f.readline())
+#       f.close()
+#       for i in range(0, len(sample2)):
+#       	  sample2[i] = sample2[i][:-1]
+#       sample2[0] = "sample2"
+
+#       os.system("cut -f5 "+x+".final.an.shared.summary > "+x+".temp_bdiv.out")
+#       bdiv = []
+#       f = open(''+x+'.temp_bdiv.out')
+#       for i in range(0, num_lines5):
+#       	  bdiv.append(f.readline())
+#       f.close()
+#       for i in range(0, len(bdiv)):
+#       	  bdiv[i] = bdiv[i][:-1]
+#       bdiv[0] = "bdiv"
+
+#       os.system("cut -f6 "+x+".final.an.shared.summary > "+x+".temp_cmin.out")
+#       cmin = []
+#       f = open(''+x+'.temp_cmin.out')
+#       for i in range(0, num_lines5):
+#       	  cmin.append(f.readline())
+#       f.close()
+#       for i in range(0, len(cmin)):
+#       	  cmin[i] = cmin[i][:-1]
+#       for i in range(1, len(cmin)):
+#       	  cmin[i] = 1 - float(cmin[i])
+#       for i in range(1, len(cmin)):
+#       	  cmin[i] = str(cmin[i])
+#       cmin[0] = "cmin"
+
+#       os.system("cut -f7 "+x+".final.an.shared.summary > "+x+".temp_cmax.out")
+#       cmax = []
+#       f = open(''+x+'.temp_cmax.out')
+#       for i in range(0, num_lines5):
+#       	  cmax.append(f.readline())
+#       f.close()
+#       for i in range(0, len(cmax)):
+#       	  cmax[i] = cmax[i][:-1]
+#       for i in range(1, len(cmax)):
+#       	  cmax[i] = 1 - float(cmax[i])
+#       for i in range(1, len(cmax)):
+#       	  cmax[i] = str(cmax[i])
+#       cmax[0] = "cmax"
+
+# with open(''+x+'.beta_data.out', 'w') as f:
+#       for f1, f2, f3, f4, f5 in zip(sample1, sample2, bdiv, cmin, cmax):
+#       	  f.write(f1+"\t"+f2+"\t"+f3+"\t"+f4+"\t"+f5+"\n")
+# f.close()
 
 
 
@@ -675,7 +832,7 @@ os.system("Rscript "+path+"graphall.R "+txconsensus+" "+txshared+" "+min_stack_p
 # initial alignment
 # oops...If you didn't get them flipped in the correct direction - use flip=T
 #os.system("mothur \"#set.logfile(name=master.logfile, append=T);" +
-                    "align.seqs(fasta="+fasta+", reference=silva.bacteria.fasta, flip=F, processors="+str(nprocessors)+")\"")
+              #      "align.seqs(fasta="+fasta+", reference=silva.bacteria.fasta, flip=F, processors="+str(nprocessors)+")\"")
 
 #fastacheck = fasta[0:fasta.find('fasta')] + 'align'
 #out = sysio("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fastacheck+", name="+names+")\"", True, False, False, False, False)
