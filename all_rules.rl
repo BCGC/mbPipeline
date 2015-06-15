@@ -44,11 +44,11 @@ rule process_otu:
     run:
         #FILLER
         
-rule finalize_sequences_454:
+rule finalize_sequences:
     input:
-        fasta='{project}.removelin.fasta',
-        names='{project}.removelin.names',
-        groups='{project}.removelin.groups'
+        fasta='{project}.remove.fasta',
+        names='{project}.remove.names',
+        groups='{project}.remove.groups'
     output:
         '{project}.final.fasta',
         '{project}.final.names',
@@ -57,40 +57,27 @@ rule finalize_sequences_454:
     run:
         #FILLER
 
-rule finalize_sequences_miseq:
-    input:
-        fasta='{project}.removechim.fasta',
-        names='{project}.removechim.names',
-        groups='{project}.removechim.groups'
-    output:
-        '{project}.final.fasta',
-        '{project}.final.names',
-        '{project}.final.taxonomy',
-        '{project}.final.groups'
-    run:
-        #FILLER
-
-rule remove_lineage:
-    input:
-        fasta='{project}.removechim.fasta',
-        names='{project}.removechim.names',
-        groups='{project}.removechim.groups'
-    output:
-        '{project}.removelin.fasta',
-        '{project}.removelin.names',
-        '{project}.removelin.groups'
-    run:
-        #FILLER
-
-rule remove_chimeras:
+rule remove_454:
     input:
         fasta='{project}.processed.fasta',
         names='{project}.processed.names',
         groups='{project}.processed.groups'
     output:
-        '{project}.removechim.fasta',
-        '{project}.removechim.names',
-        '{project}.removechim.groups'
+        '{project}.remove.fasta',
+        '{project}.remove.names',
+        '{project}.remove.groups'
+    run:
+        #FILLER
+
+rule remove_miseq:
+    input:
+        fasta='{project}.processed.fasta',
+        names='{project}.processed.names',
+        groups='{project}.processed.groups'
+    output:
+        '{project}.remove.fasta',
+        '{project}.remove.names',
+        '{project}.remove.groups'
     run:
         #FILLER
 
@@ -128,6 +115,8 @@ rule trim_sequences:
 
 rule load_454:
     output: '{project}.fasta', '{project}.names', '{project}.groups'
+    run:
+        #FILLER
 
 rule load_miseq:
     #FILLER
