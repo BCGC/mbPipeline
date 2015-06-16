@@ -12,20 +12,93 @@ rule graph:
     input:
         graphics_data = 'mb_graphics_data.txt',
         beta_data = 'beta_data.out',
-        taxonomy = '{project}.final.taxdata'
+        taxshared = '{project}.final.tax.shared'
+        taxconsensus = '{project}.final.taxconsensus'
     output:
         'AlphaDiversity.pdf',
         'BetaDiversity.pdf',
         'NumSequences.pdf',
         'TaxonomicComposition.pdf'
     run:
-        #FILLER
+        min_stack_proportion = #OBTAIN FROM DEFUALTS.JSON
+        os.system("Rscript graphall.R "+input.taxconsensus+" "+input.taxshared+" "+min_stack_proportion+"")
 
 rule data_setup:
-    input: '.temp.adiv'
+    input: temp_adiv='.temp.adiv', temp_locs='.temp.locs', temp_nums='.temp.nums'
     output: 'mb_graphics_data.txt',
     run:
-        #FILLER
+        seqs = ["meta", "nseqs"]
+        adiv = ["meta", "adiv"]
+        barcode = ["meta", "Barcode"]
+        num_lines = #OBTAIN FROM DEFAULTS.JSON
+        metadata = #OBTAIN FROM DEFAULTS.JSON
+
+        f = open(input.temp_adiv)
+        for i in range(0, num_lines) :
+            seqs.append(f.readline())
+        f.close()
+
+        f = open(input.temp_adiv)
+        for i in range(0, num_lines) :
+            adiv.append(f.readline())
+        f.close()
+
+        f = open(input.temp_locs)
+        for i in range(0, num_lines) :
+            barcode.append(f.readline())
+        f.close()
+
+        for i in range(2, num_lines+2) :
+            barcode[i] = barcode[i][:-2]
+            adiv[i] = adiv[i][:-2]
+            seqs[i] = seqs[i][:-2]
+
+        num_lines = sum(1 for line in open(input.metadata))
+        f1 = open(input.metadata)
+        lines = f1.readlines()
+        f2 = open("final_data.txt", "w")
+        #This for loop is terribly overcoded - but hey, it works ;) ######NEED TO CHECK WITH DOMINQUE
+        for i in range(0, num_lines) :
+              tabs = lines[i].split("\t")
+              tabs[len(tabs)-1] = tabs[len(tabs)-1][0:tabs[len(tabs)-1].find('\n')]
+              if i==0:
+                    tabs.append(seqs[i])
+                    tabs.append(adiv[i])
+                    f2.write("\t".join(tabs)+"\n")
+              if i==1:
+                    tabs.append(seqs[i])
+                    tabs.append(adiv[i])
+                    f2.write("\t".join(tabs)+"\n")
+              if i>=2:
+                    for j in range(2, len(barcode)) :
+                          if barcode[j] in tabs: #only continues if barcode is found
+                                tabs.append(seqs[j])
+                                tabs.append(adiv[j])
+                                f2.write("\t".join(tabs)+"\n")
+        f1.close()
+        f2.close()
+
+        if not len(indvars) == 0 :
+              f1 = open("final_data.txt")
+              f2 = open("mb_graphics_data.txt", "w")
+              lines = f1.readlines()
+              numcols = len(lines[0].split("\t"))
+              columns_to_ignore = []
+              for i in range(0, numcols) :
+                    if lines[0].split("\t")[i] == "cat" or lines[0].split("\t")[i] == "cont" :
+                          if not lines[1].split("\t")[i] in indvars :
+                                columns_to_ignore.append(i)
+              num_lines=len(lines)
+              for i in range(0, num_lines) :
+                    tabs = lines[i].split("\t")
+                    tabs[len(tabs)-1] = tabs[len(tabs)-1][0:tabs[len(tabs)-1].find('\n')]
+                    tabs = [j for k, j in enumerate(tabs) if k not in columns_to_ignore]
+                    f2.write("\t".join(tabs)+"\n")
+              f1.close()
+              f2.close()
+        else:
+              import shutil 
+              shutil.copy2("final_data.txt", "mb_graphics_data.txt")
 
 rule beta_data:
     input: '{project}.final.beta.shared'
@@ -40,7 +113,10 @@ rule process_otu:
         taxonomy='{project}.final.taxonomy',
         groups='{project}.final.groups'
     output:
-        '.temp.adiv', '{project}.final.taxdata', '{project}.final.beta.shared'
+        '.temp.adiv',
+        '{project}.final.tax.shared',
+        '{project}.final.beta.shared',
+        '{project}.final.taxconsensus'
     run:
         #FILLER
         
@@ -53,7 +129,9 @@ rule finalize_sequences:
         '{project}.final.fasta',
         '{project}.final.names',
         '{project}.final.taxonomy',
-        '{project}.final.groups'
+        '{project}.final.groups',
+        '.temp.locs',
+        '.temp.nums'
     run:
         #FILLER
 
