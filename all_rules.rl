@@ -1,6 +1,16 @@
 #snakemake rules for microbiome pipeline
 #these rules will be seperated into individual files upon completion
 
+import os
+
+def sysio(cmd, extension, newprefix):
+      p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
+      out = p.communicate()[0]
+      p.wait()
+      current = out[out[0:out.rfind(extension)].rfind("\n")+1:out[out.rfind(extension):len(out)].find("\n")+out.rfind(extension)]
+      new = prefix + extension
+      os.system("mv "+current+" "+new+"")
+
 rule all:
     input:
         'AlphaDiversity.pdf',
