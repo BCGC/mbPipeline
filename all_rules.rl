@@ -200,6 +200,22 @@ rule trim_sequences:
         '{project}.trim.names'
     run:
         #FILLER
+rule pcr_sequences:
+    input:
+    output:
+    run:
+rule count_sequences:
+    input:
+    output:
+    run:
+rule unique_sequences:
+    input:
+    output:
+    run:
+rule screen_sequences:
+    input:
+    output:
+    run:
 
 rule load_454:
     output: '{project}.fasta', '{project}.names', '{project}.groups'
@@ -207,7 +223,14 @@ rule load_454:
         #FILLER
 
 rule load_miseq:
-    #FILLER
+    output: '{project}.trim.contigs.fasta', '{project}.contigs.groups'
+    run:
+       os.system("mothur \"#set.logfile(name=master.logfile, append=T);"  "make.       contigs(file="+files+", processors="+str(nprocessors)+       ")\"")  
 
+
+       fasta = files[0:files.find('files')] + 'trim.contigs.fasta'                   
+       groups = files[0:files.find('files')] + 'contigs.groups' 
+       print fasta
+       print groups
 
         
