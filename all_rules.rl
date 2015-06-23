@@ -229,6 +229,7 @@ rule count_sequences:
 
 rule unique_sequences:
     input:
+        '{project}.good.fasta,
     output:
     run:
         os.system("mothur \"#set.logfile(name=master.logfile, append=T); unique.seqs(fasta="+fasta+")\"")   
@@ -240,8 +241,11 @@ rule unique_sequences:
 
 
 rule screen_sequences:
-    input: '{project}.trim.contigs.fasta', '{project}.contigs.groups'
-    output:'{project}.trim.contigs.good.fasta', {project}.contigs.good.groups'
+    input: 
+        '{project}.fasta', 
+        '{project}.groups'
+    output:
+        '{project}.good.fasta', {project}.good.groups'
     run:
         os.system("mothur \"#set.logfile(name=master.logfile, append=T); screen.seqs(fasta="+fasta+", group="+groups+", maxambig="+maxambig+", maxlength="+maxlength+")\"")   
 
@@ -259,7 +263,7 @@ rule load_454:
         #FILLER
 
 rule load_miseq:
-    output: '{project}.trim.contigs.fasta', '{project}.contigs.groups'
+    output: '{project}.fasta', '{project}.groups'
     run:
         os.system("mothur \"#set.logfile(name=master.logfile, append=T);"  "make.       contigs(file="+files+", processors="+str(nprocessors)+       ")\"")  
 

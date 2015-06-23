@@ -83,7 +83,7 @@ fasta = fasta[0:fasta.find('fasta')] + 'good.fasta'
 groups = groups[0:groups.find("groups")] + "good.groups"
 print fasta
 
-os.system("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fasta+")\"") 
+#os.system("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fasta+")\"") 
 
 
 ############################
@@ -333,8 +333,6 @@ for i in range(0, num_lines3):
       os.system("cut -f2 -s "+sample_list[i]+" | tail -n 5 > .temp_nums.out")  
       num_lines4 = sum(1 for line in open('.temp_nums.out'))
       f = open('.temp_nums.out')
-      for hi in f:
-          print f
       for j in range(0, num_lines4):
       	  temp1.append(f.readline())
       for z in range(0, num_lines4):
@@ -342,7 +340,7 @@ for i in range(0, num_lines3):
       temp1 = []
       invsimpson.append(summ/num_lines4)
       summ = 0
-f.close()
+      f.close()
 
 
 f = open('.temp.adiv', 'w')   ###find .temp....
@@ -350,7 +348,6 @@ for i in range(0, len(invsimpson)):
       f.write(str(invsimpson[i]) + ' \n')
 f.close()
 
-      
 #sample_list = []
 #os.system("grep -l '0.03' "+x+"*.invsimpson > "+x+".sample_list.out")
 #num_lines3 = sum(1 for line in open(''+x+'.sample_list.out'))
