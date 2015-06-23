@@ -3,13 +3,14 @@
 
 import os
 
-def sysio(cmd, extension, newprefix):
+def sysio(cmd, extensions, newprefix):
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
     out = p.communicate()[0]
     p.wait()
-    current = out[out[0:out.rfind(extension)].rfind("\n")+1:out[out.rfind(extension):len(out)].find("\n")+out.rfind(extension)]
-    new = prefix + extension
-    os.system("mv "+current+" "+new+"")
+    for extension in extensions :
+        current = out[out[0:out.rfind(extension)].rfind("\n")+1:out[out.rfind(extension):len(out)].find("\n")+out.rfind(extension)]
+        new = prefix + extension
+        os.system("cp "+current+" "+new+"")
 
 rule all:
     input:
