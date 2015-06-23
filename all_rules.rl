@@ -204,18 +204,54 @@ rule pcr_sequences:
     input:
     output:
     run:
+        os.system("mothur \"#set.logfile(name=master.logfile, append=T); pcr.seqs(fasta="+pcrseqs_reference+", start="+pcrseqs_start+", end="+pcrseqs_end+", keepdots="+keepdots+", processors=8)\"") 
+
+        pcrseqs_reference=pcrseqs_reference[0:pcrseqs_reference.find('fasta')] + 'pcr.fasta'    
+
+        print pcrseqs_reference
+
+        os.system("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+pcrseqs_reference+")\"")
+
+
 rule count_sequences:
     input:
     output:
     run:
+        os.system("mothur \"#set.logfile(name=master.logfile, append=T); count.seqs(name="+names+", group="+groups+")\"")  
+
+        count=fasta[0:fasta.find('unique.fasta')] + 'count_table'   
+        print count
+
+        os.system("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+count+")\"")
+
+
+
+
 rule unique_sequences:
     input:
     output:
     run:
+        os.system("mothur \"#set.logfile(name=master.logfile, append=T); unique.seqs(fasta="+fasta+")\"")   
+
+        names=fasta[0:fasta.find('fasta')] + 'names'
+        fasta=fasta[0:fasta.find('fasta')] + 'unique.fasta'   
+        print fasta
+        print names
+
+
 rule screen_sequences:
-    input:
-    output:
+    input: '{project}.trim.contigs.fasta', '{project}.contigs.groups'
+    output:'{project}.trim.contigs.good.fasta', {project}.contigs.good.groups'
     run:
+        os.system("mothur \"#set.logfile(name=master.logfile, append=T); screen.seqs(fasta="+fasta+", group="+groups+", maxambig="+maxambig+", maxlength="+maxlength+")\"")   
+
+        fasta = fasta[0:fasta.find('fasta')] + 'good.fasta'
+        groups = groups[0:groups.find("groups")] + "good.groups"
+        print fasta
+
+        os.system("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fasta+")\"") 
+
+
 
 rule load_454:
     output: '{project}.fasta', '{project}.names', '{project}.groups'
@@ -225,12 +261,12 @@ rule load_454:
 rule load_miseq:
     output: '{project}.trim.contigs.fasta', '{project}.contigs.groups'
     run:
-       os.system("mothur \"#set.logfile(name=master.logfile, append=T);"  "make.       contigs(file="+files+", processors="+str(nprocessors)+       ")\"")  
+        os.system("mothur \"#set.logfile(name=master.logfile, append=T);"  "make.       contigs(file="+files+", processors="+str(nprocessors)+       ")\"")  
 
 
-       fasta = files[0:files.find('files')] + 'trim.contigs.fasta'                   
-       groups = files[0:files.find('files')] + 'contigs.groups' 
-       print fasta
-       print groups
+        fasta = files[0:files.find('files')] + 'trim.contigs.fasta'                   
+        groups = files[0:files.find('files')] + 'contigs.groups' 
+        print fasta
+        print groups
 
         
