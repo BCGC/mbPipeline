@@ -42,7 +42,9 @@ rule graph:
         'NumSequences.pdf',
         'TaxonomicComposition.pdf'
     run:
-        min_stack_proportion = #OBTAIN FROM DEFUALTS.JSON
+        with open('run.json') as data_file:
+            run = json.load(data_file)
+        min_stack_proportion = run["setup"]["min_stack_proportion"]
         os.system("Rscript graphall.R "+input.taxconsensus+" "+input.taxshared+" "+min_stack_proportion+"")
 
 rule data_setup:
