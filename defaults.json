@@ -23,6 +23,8 @@
 	}
     },
     "storage": {
+	"nbases" :"",
+	"lowest": "",
 	"lines": ""
     }
 }
