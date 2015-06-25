@@ -68,7 +68,7 @@ rule data_setup:
         f1 = open(input.metadata)
         lines = f1.readlines()
         f2 = open("final_data.txt", "w")
-        #This for loop is terribly overcoded - but hey, it works ;) ######NEED TO CHECK WITH DOMINQUE
+        #This for loop is terribly overcoded - but hey, it works ;)
         for i in range(0, num_lines) :
               tabs = lines[i].split("\t")
               tabs[len(tabs)-1] = tabs[len(tabs)-1][0:tabs[len(tabs)-1].find('\n')]
