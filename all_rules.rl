@@ -358,7 +358,21 @@ rule unique_sequences:
         '{project}.unique.fasta',
         '{project}.unique.names'
     run:
-        #FILLER
+        sysio_set("mothur \"#unique.seqs(fasta="+fasta+", name="+names+")\"", [".fasta",".names"], wildcards.project+".unique")
+
+        p = subprocess.Popen("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fasta+", name="+names+")\"", stdout=subprocess.PIPE, shell=True)
+        out = p.communicate()[0]
+        p.wait()
+        out = out[out.find("97.5%-tile:")+12:len(out)]
+        out = out[out.find("\t")+1:len(out)]
+        out = out[out.find("\t")+1:len(out)]
+        nbases = out[0:out.find("\t")]
+        with open('run.json', 'r+') as f:
+            run = json.load(f)
+            run["storage"]["nbases"] = nbases
+            f.seek(0)
+            f.write(json.dumps(run))
+            f.truncate()
 
 rule trim_sequences:
     input:
@@ -368,7 +382,15 @@ rule trim_sequences:
         '{project}.trim.fasta',
         '{project}.trim.names'
     run:
-        #FILLER
+        with open('run.json') as data_file:
+            run = json.load(data_file)
+        pdiffs = run["setup"]["454"]["pdiffs"]
+        bdiffs = run["setup"]["454"]["bdiffs"]
+        nprocessors = run["setup"]["nprocessors"]
+        sysio_set("mothur \"#set.logfile(name=master.logfile, append=T); trim.seqs(fasta="+input.fasta+
+                  ", name="+input.names+", oligos=oligos.txt, pdiffs="+pdiffs+", bdiffs="+bdiffs+
+                  ", maxhomop=8, minlength=200, flip=T processors="+str(nprocessors)+")\"", [".fasta", ".names"], wildcards.project+".trim")
+
 
 ########## MISEQ PREPROCESS #############
 rule pcr_sequences:
