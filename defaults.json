@@ -1,0 +1,28 @@
+{
+    "version": "1.0",
+    "setup": {
+	"pipeline": "",
+	"metadata": "",
+	"arecontrols": 0,
+	"controlsfile": "",
+	"datapath": "",
+	"proj": "",
+	"indvars": []
+	"min_stack_proportion:" "0.14",
+	"nprocessors:" "1",
+	"classify_cutoff": "80",
+	"dist_cutoff": ".20",
+	"silva": "silva.bacteria.fasta",
+	"454": {
+	    "trainset": "trainset7_112011.pds",
+	    "pdiffs": "2",
+	    "bdiffs": "1"
+	},
+	"miseq": {
+	    "trainset": "trainset9_032012.pds"
+	}
+    },
+    "storage": {
+	"lines": ""
+    }
+}

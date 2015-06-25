@@ -2,6 +2,7 @@
 #these rules will be seperated into individual files upon completion
 
 import os
+import json
 
 def sysio(cmd, extensions, newprefix):
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
@@ -41,8 +42,11 @@ rule data_setup:
         seqs = ["meta", "nseqs"]
         adiv = ["meta", "adiv"]
         barcode = ["meta", "Barcode"]
-        num_lines = #OBTAIN FROM DEFAULTS.JSON
-        metadata = #OBTAIN FROM DEFAULTS.JSON
+        with open('run.json') as data_file:
+            run = json.load(data_file)
+        num_lines = run["storage"]["lines"]
+        metadata = run["setup"]["metadata"]
+        indvars = run["setup"]["indvars"]
 
         f = open(input.temp_adiv)
         for i in range(0, num_lines) :
@@ -64,8 +68,8 @@ rule data_setup:
             adiv[i] = adiv[i][:-2]
             seqs[i] = seqs[i][:-2]
 
-        num_lines = sum(1 for line in open(input.metadata))
-        f1 = open(input.metadata)
+        num_lines = sum(1 for line in open(metadata))
+        f1 = open(metadata)
         lines = f1.readlines()
         f2 = open("final_data.txt", "w")
         #This for loop is terribly overcoded - but hey, it works ;)
