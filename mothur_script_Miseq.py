@@ -108,7 +108,7 @@ os.system("mothur \"#set.logfile(name=master.logfile, append=T); count.seqs(name
 count=fasta[0:fasta.find('unique.fasta')] + 'count_table'   
 print count
 
-os.system("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+count+")\"")
+#os.system("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+count+")\"")
 
 
 
@@ -123,7 +123,7 @@ pcrseqs_reference=pcrseqs_reference[0:pcrseqs_reference.find('fasta')] + 'pcr.fa
 
 print pcrseqs_reference
 
-os.system("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+pcrseqs_reference+")\"")
+#os.system("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+pcrseqs_reference+")\"")
 
 
 #improve the overall alignment quality
