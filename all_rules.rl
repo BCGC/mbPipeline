@@ -475,56 +475,54 @@ rule trim_sequences:
 ########## MISEQ PREPROCESS #############
 rule pcr_sequences:
     input:
+        fasta='silva.bacteria.fasta'
     output:
+        '{project}.pcr.fasta' 
     run:
-        os.system("mothur \"#set.logfile(name=master.logfile, append=T); pcr.seqs(fasta="+pcrseqs_reference+", start="+pcrseqs_start+", end="+pcrseqs_end+", keepdots="+keepdots+", processors=8)\"") 
-
-        pcrseqs_reference=pcrseqs_reference[0:pcrseqs_reference.find('fasta')] + 'pcr.fasta'    
-
+        with open('run.json') as data_file:
+            run = json.load(data_file)
+        pcrseqs_start = run["setup"]["miseq"]["pcrseqs_start"]
+        pcrseqs_end = run["setup"]["miseq"]["pcrseqs_end"]
+        keepdots= run["setup"]["miseq"]["keepdots"]
+        sysio.set("mothur \"#set.logfile(name=master.logfile, append=T); pcr.seqs(fasta="input.fasta", start="+pcrseqs_start+", end="+pcrseqs_end+", keepdots="+keepdots+", processors=8)\"") 
         print pcrseqs_reference
 
-        os.system("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+pcrseqs_reference+")\"")
-
-
 rule count_sequences:
-    input:
+      input:
+        '{project}.screen.fasta'
     output:
+        '{project}.unique.fasta'
+        '{project}.names'
     run:
-        os.system("mothur \"#set.logfile(name=master.logfile, append=T); count.seqs(name="+names+", group="+groups+")\"")  
-
-        count=fasta[0:fasta.find('unique.fasta')] + 'count_table'   
-        print count
-
-        os.system("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+count+")\"")
-
-
-rule unique_sequences:
-    input:
-        '{project}.good.fasta',
-    output:
-    run:
-        os.system("mothur \"#set.logfile(name=master.logfile, append=T); unique.seqs(fasta="+fasta+")\"")   
-
-        names=fasta[0:fasta.find('fasta')] + 'names'
-        fasta=fasta[0:fasta.find('fasta')] + 'unique.fasta'   
+        sysio.set("mothur \"#set.logfile(name=master.logfile, append=T); unique.seqs(fasta="+input.fasta+")\"")      
         print fasta
         print names
 
+rule unique_sequences:
+       input:
+        '{project}.screen.fasta'
+    output:
+        '{project}.unique.fasta'
+        '{project}.names'
+    run:
+        sysio.set("mothur \"#set.logfile(name=master.logfile, append=T); unique.seqs(fasta="+input.fasta+")\"")      
+        print fasta
+        print names
 
 rule screen_sequences:
-    input: 
-        '{project}.fasta', 
-        '{project}.groups'
+     input: 
+        fasta='{project}.fasta' 
+        groups='{project}.groups'
     output:
-        '{project}.good.fasta', '{project}.good.groups'
+        '{project}.screen.fasta'
+        '{project}.screen.groups'
     run:
-        os.system("mothur \"#set.logfile(name=master.logfile, append=T); screen.seqs(fasta="+fasta+", group="+groups+", maxambig="+maxambig+", maxlength="+maxlength+")\"")   
-
-        fasta = fasta[0:fasta.find('fasta')] + 'good.fasta'
-        groups = groups[0:groups.find("groups")] + "good.groups"
+         with open('run.json') as data_file:
+            run = json.load(data_file)
+        maxambig= run["setup"]["miseq"]["maxambig"]
+        maxlength= run["setup"]["miseq"]["maxlength"]
+        sysio.set("mothur \"#set.logfile(name=master.logfile, append=T); screen.seqs(fasta="+input.fasta+", group="+input.groups+", maxambig="+maxambig+", maxlength="+maxlength+")\"")   
         print fasta
-
-        os.system("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fasta+")\"") 
 
 #####################
 
@@ -583,11 +581,11 @@ rule load_454:
 rule load_miseq:
     output: '{project}.fasta', '{project}.groups'
     run:
-        os.system("mothur \"#set.logfile(name=master.logfile, append=T);"  "make.       contigs(file="+files+", processors="+str(nprocessors)+       ")\"")  
-
-
-        fasta = files[0:files.find('files')] + 'trim.contigs.fasta'                   
-        groups = files[0:files.find('files')] + 'contigs.groups' 
+        with open('run.json') as data_file:
+            run = json.load(data_file)
+        nprocessors= run["setup"]["nprocessors"]
+        maxlength= run["setup"]["miseq"]["files"]
+        sysio.set("mothur \"#set.logfile(name=master.logfile, append=T);"  "make.contigs(file="+files+", processors="+str(nprocessors)+")\"")  
         print fasta
         print groups
 
