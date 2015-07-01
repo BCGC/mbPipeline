@@ -3,7 +3,7 @@
     "setup": {
 	"pipeline": "",
 	"metadata": "",
-	"arecontrols": 0,
+	"arecontrols": "0",
 	"controlsfile": "",
 	"datapath": "",
 	"proj": "",
