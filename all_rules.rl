@@ -360,7 +360,16 @@ rule finalize_sequences:
 
             print ""
             print "Warning: the following control samples have an unusually high number of sequences: " + str(ctrl_warn)
-
+        f = open('.temp.numseqs', 'w')
+        for i in range(0, len(nums)):
+            f.write(str(nums[i]) + " \n")
+            f.close()
+        with open('run.json', 'r+') as f:
+            run = json.load(f)
+            run["storage"]["lines"] = ""+sum(1 for line in open('.temp.numseqs'))
+            f.seek(0)
+            f.write(json.dumps(run))
+            f.truncate()
 
         low_warn = [] #This part grabs all samples with fewer than 3000 sequences
         for i in range(0, len(nums)):
@@ -389,7 +398,13 @@ rule finalize_sequences:
             if float(nums[i]) > float(highest):
                 highest = float(nums[i])
         lowest = highest
-
+        with open('run.json', 'r+') as f:
+            run = json.load(f)
+            run["storage"]["lowest"] = lowest
+            f.seek(0)
+            f.write(json.dumps(run))
+            f.truncate()
+        
         #The following part finds the sample with the lowest number of sequences (which is consider the ideal lowest)
         for i in range(0, len(nums)):
             if float(nums[i]) < lowest:
