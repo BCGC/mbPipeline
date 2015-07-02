@@ -566,7 +566,7 @@ rule process_sequences:
 
         fasta = outputs[".fasta"]
         print fasta
-        names = names[0:names.find('names')] + 'filter.names'
+        names = outputs[".names"]
 
         os.system("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fasta+", name="+names+")\"")
 
