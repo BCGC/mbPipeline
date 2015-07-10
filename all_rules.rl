@@ -208,7 +208,7 @@ rule process_otu:
         '.temp.adiv',
         '{project}.final.tax.shared',
         '{project}.final.shared',
-        '{project}.final.taxconsensus',
+        '{project}.final.tax.consensus',
         '.temp.locs',
         '.temp.nums'
     run:
