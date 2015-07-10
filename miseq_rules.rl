@@ -424,7 +424,7 @@ rule process_sequences:
 
 
         # precluster to help get rid of sequencing errors - also helps with computational efficiency
-        sysio_get("mothur \"#set.logfile(name=master.logfile, append=T);" +
+        sysio_set("mothur \"#set.logfile(name=master.logfile, append=T);" +
                   "pre.cluster(fasta="+input.fasta+", count="+input.count+", diffs=2)\"", [".fasta",".count"], wildcards.project+".process")
 
     
@@ -447,9 +447,10 @@ rule pcr_sequences:
             run = json.load(data_file)
         pcrseqs_start = run["setup"]["miseq"]["pcrseqs_start"]
         pcrseqs_end = run["setup"]["miseq"]["pcrseqs_end"]
-        keepdots= run["setup"]["miseq"]["keepdots"]
+        keepdots = run["setup"]["miseq"]["keepdots"]
+        silva = run["setup"]["silva"]
 
-        sysio.set("mothur \"#set.logfile(name=master.logfile, append=T); pcr.seqs(fasta="+#create new default  +", start="+pcrseqs_start+", end="+pcrseqs_end+", keepdots="+keepdots+", processors=8)\""[".fasta"], wildcards.project+".preprocess")                                            
+        sysio_set("mothur \"#set.logfile(name=master.logfile, append=T); pcr.seqs(fasta="+silva+", start="+pcrseqs_start+", end="+pcrseqs_end+", keepdots="+keepdots+", processors=8)\""[".fasta"], wildcards.project+".preprocess")                                            
          sysio.set("mothur \"#set.logfile(name=master.logfile, append=T); count.seqs(name="+input.names+", group="+input.groups+")\""[".count"], wildcards.project+".preprocess") 
 
 
@@ -460,7 +461,7 @@ rule unique_sequences:
         '{project}.unique.fasta'
         '{project}.unique.names'
     run:
-        sysio.set("mothur \"#set.logfile(name=master.logfile, append=T); unique.seqs(fasta="+input.fasta+")\""[".fasta",".names"], wildcards.project+".unique")    
+        sysio_set("mothur \"#set.logfile(name=master.logfile, append=T); unique.seqs(fasta="+input.fasta+")\""[".fasta",".names"], wildcards.project+".unique")    
         
 
 rule screen_sequences:
@@ -475,7 +476,7 @@ rule screen_sequences:
             run = json.load(data_file)
         maxambig= run["setup"]["miseq"]["maxambig"]
         maxlength= run["setup"]["miseq"]["maxlength"]
-        sysio.set("mothur \"#set.logfile(name=master.logfile, append=T); screen.seqs(fasta="+input.fasta+", group="+input.groups+", maxambig="+maxambig+", maxlength="+maxlength+")\""[".fasta",".group"], wildcards.project+".screen")  
+        sysio_set("mothur \"#set.logfile(name=master.logfile, append=T); screen.seqs(fasta="+input.fasta+", group="+input.groups+", maxambig="+maxambig+", maxlength="+maxlength+")\""[".fasta",".group"], wildcards.project+".screen")  
         
 
 #####################
