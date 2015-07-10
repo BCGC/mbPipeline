@@ -13,6 +13,13 @@ installed = os.path.dirname(os.path.realpath(sys.argv[0]))
 
 ######### SETUP DEFAULT VALUES #############
 try:
+      pipeline = args['pipeline']
+except KeyError:
+      raise Exception("Pipeline mode not propvided!")
+if pipeline!='454' & pipeline!='miseq':
+    raise Exception("Proper pipeline name not specified!")
+
+try:
       PATH = args['workdir']
       if len(PATH) > 0:
             os.chdir(PATH)
@@ -62,6 +69,13 @@ except KeyError:
 
 if not os.path.isdir(DATAPATH):
       raise Exception("Bad value for datapath.")
+
+try:
+    trainset = args['trainset']
+except KeyError:
+    #
+    print("Warning: Using default trainset!")
+
 
 # make sure we have the project name ###
 try:
