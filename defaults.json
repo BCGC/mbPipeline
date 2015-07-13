@@ -7,7 +7,7 @@
 	"controlsfile": "",
 	"datapath": "",
 	"proj": "",
-	"indvars": []
+	"indvars": [],
 	"min_stack_proportion:" "0.14",
 	"nprocessors:" "1",
 	"classify_cutoff": "80",
