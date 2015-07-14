@@ -436,7 +436,7 @@ rule finalize_sequences:
         f.close()
 
 
-rule remove_454:
+rule remove:
     input:
         fasta='{project}.process.fasta',
         names='{project}.process.names',
@@ -488,24 +488,11 @@ rule remove_454:
                 "remove.lineage(fasta="+fasta+", name="+names+", group="+groups+", taxonomy="+taxonomy+
                   ", taxon=Mitochondria-Cyanobacteria_Chloroplast-unknown)\"", [".taxonomy",".names",".groups",",fasta"], wildcards.project+".remove")
 
-
-rule remove_miseq:
-    input:
-        fasta='{project}.process.fasta',
-        names='{project}.process.names',
-        groups='{project}.process.groups'
-    output:
-        '{project}.remove.fasta',
-        '{project}.remove.names',
-        '{project}.remove.groups'
-    run:
-        #FILLER
-
 rule process_sequences:
     input:
-        fasta='{project}.preprocess.fasta',
-        names='{project}.preprocess.names'
-        groups='{project}.preprocess.groups'
+        fasta='{project}.unique.fasta',
+        names='{project}.unique.names'
+        groups='{project}.unique.groups'
     output:
         '{project}.process.fasta',
         '{project}.process.names',
@@ -592,28 +579,23 @@ rule process_sequences:
 
         os.system("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fasta+", name="+names+")\"")
 
-
-rule rename_miseq:
-    input:
-    output:
-    run:
-
-rule rename_454:
-    input:
-        fasta='{project}.unique.fasta',
-        names='{project}.unique.names'
-        groups='{project}.groups'
-    output:
-        '{project}.preprocessed.fasta',
-        '{project}.preprocessed.names',
-        '{project}.preprocessed.groups'
-    run:
-        newfasta = input.fasta[0:input.fasta.find('unique.fasta')] + 'preprocessed.fasta'
-        os.system("cp "+input.fasta+" "+newfasta+"")
-        newnames = input.names[0:input.names.find('unique.names')] + 'preprocessed.names'
-        os.system("cp "+input.names+" "+newnames+"")
-        newgroups = input.groups[0:input.fasta.find('groups')] + 'preprocessed.groups'
-        os.system("cp "+input.groups+" "+newgroups+"")
+#IGNORE THIS RULE
+#rule rename_454:
+#    input:
+#        fasta='{project}.unique.fasta',
+#        names='{project}.unique.names'
+#        groups='{project}.groups'
+#    output:
+#        '{project}.preprocessed.fasta',
+#        '{project}.preprocessed.names',
+#        '{project}.preprocessed.groups'
+#    run:
+#        newfasta = input.fasta[0:input.fasta.find('unique.fasta')] + 'preprocessed.fasta'
+#        os.system("cp "+input.fasta+" "+newfasta+"")
+#        newnames = input.names[0:input.names.find('unique.names')] + 'preprocessed.names'
+#        os.system("cp "+input.names+" "+newnames+"")
+#        newgroups = input.groups[0:input.fasta.find('groups')] + 'preprocessed.groups'
+#        os.system("cp "+input.groups+" "+newgroups+"")
 
 rule unique_sequences:
     input:
@@ -657,7 +639,7 @@ rule trim_sequences:
                   ", maxhomop=8, minlength=200, flip=T processors="+str(nprocessors)+")\"", [".fasta", ".names"], wildcards.project+".trim")
 
 
-rule load_454:
+rule load:
     output: '{project}.fasta', '{project}.names', '{project}.groups'
     run:
         with open('run.json') as data_file:
@@ -707,17 +689,5 @@ rule load_454:
         if tmp / summ.shape[0] > 0.2:
             warnings.warn(str(tmp / summ.shape[0] * 100) +
                           "% of unique reads are shorter than 200 bp.", Warning)
-
-
-rule load_miseq:
-    output: '{project}.fasta', '{project}.groups'
-    run:
-        with open('run.json') as data_file:
-            run = json.load(data_file)
-        nprocessors= run["setup"]["nprocessors"]
-        maxlength= run["setup"]["miseq"]["files"]
-        sysio.set("mothur \"#set.logfile(name=master.logfile, append=T);"  "make.contigs(file="+files+", processors="+str(nprocessors)+")\"")  
-        print fasta
-        print groups
 
         
