@@ -106,27 +106,65 @@ with open('run.json', 'r+') as f:
               print("Using default bdiffs")
         if pipeline == "miseq":
             
-           try:
-             maxambig = args['maxambig']
-           try:
-             maxlength = args['maxlength']
+            try:
+              maxambig = args['maxambig']
+              run["setup"][pipeline]["maxambig"] = maxambig
+            except KeyError:
+              print("Using default maxambig.")  
+
+            try:
+              maxlength = args['maxlength']
+              run["setup"][pipeline]["maxlength"] = maxlength
+            except KeyError:
+              print("Using default maxlength.")
+
             try:
               pcr_start = args['pcr_start']
+              run["setup"][pipeline]["pcr_start"] = pcr_start
+            except KeyError:
+              print("Using default pcr_start.")
+
             try:
               pcr_end = args['pcr_end']
+              run["setup"][pipeline]["pcr_end"] = pcr_end
+            except KeyError:
+              print("Using default pcr_end.")
+
             try:
               screen_start = args['screen_start']
+              run["setup"][pipeline]["screen_start"] = screen_start
+            except KeyError:
+              print("Using default screen_start.")
+
             try:
-              screen_end = args['screen_seqs']
+              screen_end = args['screen_end']
+              run["setup"][pipeline]["screen_end"] = screen_end
+            except KeyError:
+              print("Using default screen_end.")
+
             try:
               maxhomop = args['maxhomop']
+              run["setup"][pipeline]["maxhomop"] = maxhomop
+            except KeyError:
+              print("Using default maxhomop.")    
+
             try:
               taxon = args['taxon']
+              run["setup"][pipeline]["taxon"] = taxon
+            except KeyError:
+              print("Using default taxon.")
+   
             try:
               groups1 = args['groups1']
+              run["setup"][pipeline]["group1"] = group1
+            except KeyError:
+              print("Using default group1.")
+   
             try:
               seq_reference = args['seq_reference']
-
+              run["setup"][pipeline]["seq_reference"] = seq_reference
+            except KeyError: 
+              print("Using default seq_reference.")   
 
 
 
