@@ -24,6 +24,16 @@
 	"miseq": {
 	    "rules": [],
 	    "trainset": "trainset9_032012.pds"
+	    “maxambig”: ”0”
+	    “maxlength”: “275”
+            “pcrseqs_start”: “11894”
+	    “pcrseqs_end”: “25319”
+	    “screenseqs_start”: “1968”
+	    “screenseqs_end”: “11550”
+	    “maxhomop”:” “8”
+	    “taxon”: “Chloroplast-Mitochondria-unknown-Archaea-Eukaryota”
+	    “groups1”: “Mock”
+	    “seqerror_reference”: “HMP_MOCK.v35.fasta"
 	}
     },
     "storage": {

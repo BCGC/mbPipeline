@@ -104,6 +104,32 @@ with open('run.json', 'r+') as f:
                     run["setup"][pipeline]["bdiffs"] = bdiffs
                 except KeyError:
                     print("Using default bdiffs")
+            if pipeline == "miseq":
+                
+               try:
+                   maxambig = args['maxambig']
+               try:
+                   maxlength = args['maxlength']
+                try:
+                    pcr_start = args['pcr_start']
+                try:
+                    pcr_end = args['pcr_end']
+                try:
+                    screen_start = args['screen_start']
+                try:
+                    screen_end = args['screen_seqs']
+                try:
+                    maxhomop = args['maxhomop']
+                try:
+                    taxon = args['taxon']
+                try:
+                    groups1 = args['groups1']
+                try:
+                    seq_reference = args['seq_reference']
+
+
+
+
 
             try:
                 indvars = args['indvars']
