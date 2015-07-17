@@ -185,10 +185,27 @@ with open('run.json', 'r+') as f:
             print("Minimum stack proportion not provided, will use default!")
 
         try:
-            nprocessors = args['processors']
+            nprocessors = args['nprocessors']
             run["setup"]["nprocessors"] = nprocessors
         except KeyError:
             print("Number of processors not provided, will use default")
+        try:
+            classify_cutoff = args['classify_cutoff']
+            run["setup"]["classify_cutoff"]
+        except KeyError:
+            print("Using defaults for cut_cutoff")
+        try:
+            dist_cutoff = args['dist_cutoff']
+            run["setup"]["dist_cutoff"]
+        except KeyError:
+            print("Using defaults for dist_cutoff")
+        try:
+            silva = args['silva']
+            run["setup"]["silva"]
+        except KeyError:
+            print("Using defaults for silva")
+
+
 
 
         f.seek(0)
