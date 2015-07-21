@@ -21,7 +21,7 @@ except KeyError:
 except OSError:
     print("Invalid value for workdir, using default directory.")
 
-os.system("cp "+installed+"/defaults.json")
+os.system("cp "+installed+"/defaults.json run.json")
     
 with open('run.json', 'r+') as f:
         run = json.load(f)
