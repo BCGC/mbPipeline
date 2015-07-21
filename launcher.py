@@ -20,6 +20,8 @@ except KeyError:
     print("Using default working directory.")
 except OSError:
     print("Invalid value for workdir, using default directory.")
+
+os.system("cp "+installed+"/defaults.json")
     
 with open('run.json', 'r+') as f:
         run = json.load(f)
@@ -218,10 +220,10 @@ with open('run.json') as data_file:
      rulefiles = run["setup"]["+pipeline+"]
 
 with open("Snakefile", w) as f_snakefile:
-for file in rulefiles:
-    with open(file) as f_rulefile:
-       for line in f_rulefile:
-       f_snakefile.write(line)
+    for file in rulefiles:
+        with open(file) as f_rulefile:
+            for line in f_rulefile:
+            f_snakefile.write(line)
 
        
 ### INSERT CODE TO LAUNCH SNAKEMAKE HERE
