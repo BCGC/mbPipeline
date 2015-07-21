@@ -2,6 +2,7 @@
     "version": "1.0",
     "setup": {
 	"pipeline": "",
+	"sff": [],
 	"metadata": "",
 	"arecontrols": "0",
 	"controlsfile": "",

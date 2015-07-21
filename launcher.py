@@ -208,7 +208,12 @@ with open('run.json', 'r+') as f:
             print("Using defaults for silva")
 
 
+        import subprocess
+        sff = subprocess.Popen('find '+DATAPATH+' -name *.sff', shell = True, stdout=subprocess.PIPE).communicate()[0]
+        sff = sff.rsplit('\n')
+        sff_file_names = [txt[:-4] for txt in sff]
 
+        run["setup"]["sff"] = sff_file_names
 
         f.seek(0)
         f.write(json.dumps(run))
