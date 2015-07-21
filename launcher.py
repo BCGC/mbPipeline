@@ -193,17 +193,17 @@ with open('run.json', 'r+') as f:
             print("Number of processors not provided, will use default")
         try:
             classify_cutoff = args['classify_cutoff']
-            run["setup"]["classify_cutoff"]
+            run["setup"]["classify_cutoff"] = classify_cutoff
         except KeyError:
             print("Using defaults for cut_cutoff")
         try:
             dist_cutoff = args['dist_cutoff']
-            run["setup"]["dist_cutoff"]
+            run["setup"]["dist_cutoff"] = dist_cutoff
         except KeyError:
             print("Using defaults for dist_cutoff")
         try:
             silva = args['silva']
-            run["setup"]["silva"]
+            run["setup"]["silva"] = silva
         except KeyError:
             print("Using defaults for silva")
 
