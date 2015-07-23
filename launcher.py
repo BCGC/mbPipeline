@@ -1,5 +1,6 @@
 import sys
 import os
+import json
 
 args = dict()
 for a in sys.argv[1:len(sys.argv)]:
@@ -31,7 +32,7 @@ with open('run.json', 'r+') as f:
             run["setup"]["pipeline"] = pipeline
         except KeyError:
             raise Exception("Pipeline mode not propvided!")
-        if pipeline != '454' & pipeline != 'miseq':
+        if (pipeline != '454') & (pipeline != 'miseq'):
             raise Exception("Proper pipeline name not specified!")
 
         try:
@@ -63,7 +64,8 @@ with open('run.json', 'r+') as f:
             os.system("ln -fs " + REFPATH + "/LookUp_Titanium.pat .")
             os.system("ln -fs " + REFPATH + "/silva.* .")
             os.system("ln -fs " + REFPATH + "/" + metadata + "")
-            os.system("ln -fs " + REFPATH + "/" +  controlsfile + "")
+            if run["setup"]["arecontrols"] == "1":
+              os.system("ln -fs " + REFPATH + "/" +  controlsfile + "")
         else:
             raise Exception("Bad value for refpath.")
 
@@ -222,13 +224,13 @@ with open('run.json', 'r+') as f:
         
 with open('run.json') as data_file:
      run = json.load(data_file)
-     rulefiles = run["setup"]["+pipeline+"]
+     rulefiles = run["setup"][pipeline]["rules"]
 
-with open("Snakefile", w) as f_snakefile:
+with open("Snakefile", "w") as f_snakefile:
     for file in rulefiles:
         with open(file) as f_rulefile:
             for line in f_rulefile:
-            f_snakefile.write(line)
+              f_snakefile.write(line)
 
        
 ### INSERT CODE TO LAUNCH SNAKEMAKE HERE

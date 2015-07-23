@@ -1,45 +1,45 @@
 {
-    "version": "1.0",
-    "setup": {
-	"pipeline": "",
-	"sff": [],
-	"metadata": "",
-	"arecontrols": "0",
-	"controlsfile": "",
-	"datapath": "",
-	"proj": "",
-	"indvars": [],
-	"min_stack_proportion:" "0.14",
-	"nprocessors:" "1",
-	"classify_cutoff": "80",
-	"dist_cutoff": ".20",
-	"silva": "silva.bacteria.fasta",
-	"454": {
-	    "rules": ["all", "graph", "data_setup", "beta_data", "454/process_otu", "454/finalize_sequences",
-		      "454/remove_454", "454/process", "454/remove", "454/process_sequences",
-		      "454/unique_sequences", "454/trim_sequences", "454/load"],
-	    "trainset": "trainset7_112011.pds",
-	    "pdiffs": "2",
-	    "bdiffs": "1"
+	"version": "1.0",
+	"setup": {
+		"pipeline": "",
+		"sff": [],
+		"metadata": "",
+		"arecontrols": "0",
+		"controlsfile": "",
+		"datapath": "",
+		"proj": "",
+		"indvars": [],
+		"min_stack_proportion": "0.14",
+		"nprocessors": "1",
+		"classify_cutoff": "80",
+		"dist_cutoff": ".20",
+		"silva": "silva.bacteria.fasta",
+		"454": {
+			"rules": ["all", "graph", "data_setup", "beta_data", "454/process_otu", "454/finalize_sequences",
+				  "454/remove_454", "454/process", "454/remove", "454/process_sequences",
+				  "454/unique_sequences", "454/trim_sequences", "454/load"],
+			"trainset": "trainset7_112011.pds",
+			"pdiffs": "2",
+			"bdiffs": "1"
+		},
+		"miseq": {
+			"rules": [],
+			"trainset": "trainset9_032012.pds",
+			"maxambig": "0",
+			"maxlength": "275",
+			"pcrseqs_start": "11894",
+			"pcrseqs_end": "25319",
+			"screenseqs_start": "1968",
+			"screenseqs_end": "11550",
+			"maxhomop": "8",
+			"taxon": "Chloroplast-Mitochondria-unknown-Archaea-Eukaryota",
+			"groups1": "Mock",
+			"seqerror_reference": "HMP_MOCK.v35.fasta"
+		}
 	},
-	"miseq": {
-	    "rules": [],
-	    "trainset": "trainset9_032012.pds"
-	    “maxambig”: ”0”
-	    “maxlength”: “275”
-            “pcrseqs_start”: “11894”
-	    “pcrseqs_end”: “25319”
-	    “screenseqs_start”: “1968”
-	    “screenseqs_end”: “11550”
-	    “maxhomop”:” “8”
-	    “taxon”: “Chloroplast-Mitochondria-unknown-Archaea-Eukaryota”
-	    “groups1”: “Mock”
-	    “seqerror_reference”: “HMP_MOCK.v35.fasta"
+	"storage": {
+		"nbases" :"",
+		"lowest": "",
+		"lines": ""
 	}
-    },
-    "storage": {
-	"nbases" :"",
-	"lowest": "",
-	"lines": ""
-    }
 }
