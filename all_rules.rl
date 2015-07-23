@@ -4,6 +4,12 @@
 import os
 import json
 
+#with open('run.json') as data_file:
+#    run = json.load(data_file)
+#PROJECT = run["setup"]["proj"]
+#SFF_FILE_NAMES = run["setup"]["sff"]
+SFF_FILE_NAMES = ["one", "two"]
+PROJECT='test'
 def sysio_set(cmd, extensions, newprefix):
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
     out = p.communicate()[0]
@@ -32,10 +38,10 @@ rule all:
 
 rule graph:
     input:
-        graphics_data = 'mb_graphics_data.txt',
-        beta_data = 'beta_data.out',
-        taxshared = '{project}.final.tax.shared'
-        taxconsensus = '{project}.final.tax.consensus'
+        graphics_data = '{project}.mb_graphics_data.txt'.format(project=PROJECT),
+        beta_data = '{project}.beta_data.out'.format(project=PROJECT),
+        taxshared = '{project}.final.tax.shared'.format(project=PROJECT),
+        taxconsensus = '{project}.final.tax.consensus'.format(project=PROJECT)
     output:
         'AlphaDiversity.pdf',
         'BetaDiversity.pdf',
@@ -48,8 +54,8 @@ rule graph:
         os.system("Rscript graphall.R "+input.taxconsensus+" "+input.taxshared+" "+min_stack_proportion+"")
 
 rule data_setup:
-    input: temp_adiv='.temp.adiv', temp_locs='.temp.locs', temp_nums='.temp.nums'
-    output: 'mb_graphics_data.txt',
+    input: temp_adiv='{project}.temp.adiv', temp_locs='{project}.temp.locs', temp_nums='{project}.temp.nums'
+    output: '{project}.mb_graphics_data.txt',
     run:
         seqs = ["meta", "nseqs"]
         adiv = ["meta", "adiv"]
@@ -125,11 +131,11 @@ rule data_setup:
             f2.close()
         else:
             import shutil 
-            shutil.copy2("final_data.txt", "mb_graphics_data.txt")
+            shutil.copy2("final_data.txt", wildcards.project+"mb_graphics_data.txt")
             
 rule beta_data:
     input: '{project}.final.shared'
-    output: 'beta_data.out'
+    output: '{project}.beta_data.out'
     run:
         outputs = sysio_get("mothur \"#summary.shared(shared="+input+", calc=thetayc)\"", [".summary"])
         summary = outputs[".summary"]
@@ -193,7 +199,7 @@ rule beta_data:
             cmax[i] = str(cmax[i])
         cmax[0] = "cmax"
 
-        with open('beta_data.out', 'w') as f:
+        with open(wildcards.project+'.beta_data.out', 'w') as f:
             for f1, f2, f3, f4, f5 in zip(sample1, sample2, bdiv, cmin, cmax):
                 f.write(f1+"\t"+f2+"\t"+f3+"\t"+f4+"\t"+f5+"\n")
         f.close()
@@ -205,12 +211,10 @@ rule process_otu:
         taxonomy='{project}.final.taxonomy',
         groups='{project}.final.groups'
     output:
-        '.temp.adiv',
+        '{project}.temp.adiv',
         '{project}.final.tax.shared',
         '{project}.final.shared',
-        '{project}.final.tax.consensus',
-        '.temp.locs',
-        '.temp.nums'
+        '{project}.final.tax.consensus'
     run:
         with open('run.json') as data_file:
             run = json.load(data_file)
@@ -274,7 +278,7 @@ rule process_otu:
             invsimpson.append(summ/num_lines4)
             summ = 0
             f.close()
-        f = open('.temp.adiv', 'w')
+        f = open(wildcards.project+'.temp.adiv', 'w')
         for i in range(0, len(invsimpson)):
             f.write(str(invsimpson[i]) + ' \n')
         f.close()
@@ -283,15 +287,15 @@ rule finalize_sequences:
     input:
         fasta='{project}.remove.fasta',
         names='{project}.remove.names',
-        groups='{project}.remove.groups'
+        groups='{project}.remove.groups',
         taxonomy = '{project}.remove.taxonomy'
     output:
         '{project}.final.fasta',
         '{project}.final.names',
         '{project}.final.taxonomy',
         '{project}.final.groups',
-        '.temp.locs',
-        '.temp.nums'
+        '{project}.temp.locs',
+        '{project}.temp.nums'
     run:
         # final files
         os.system("cp "+input.fasta+" "+wildcards.project+".final.fasta")
@@ -328,7 +332,7 @@ rule finalize_sequences:
             nums.append(temp2)
 
         ### print warnings, find optimal sequence size and save ctrl seqs to file ###
-         with open('run.json') as data_file:
+        with open('run.json') as data_file:
             run = json.load(data_file)
         arecontrols = run["setup"]["arecontrols"]
 
@@ -358,8 +362,8 @@ rule finalize_sequences:
                   f.write(ctrls[i] + ": " + ctrl_nums[i] + " \n")
             f.close()
 
-            print ""
-            print "Warning: the following control samples have an unusually high number of sequences: " + str(ctrl_warn)
+            print("")
+            print("Warning: the following control samples have an unusually high number of sequences: " + str(ctrl_warn))
         f = open('.temp.numseqs', 'w')
         for i in range(0, len(nums)):
             f.write(str(nums[i]) + " \n")
@@ -375,17 +379,17 @@ rule finalize_sequences:
         for i in range(0, len(nums)):
             if float(nums[i]) < 3000:
                    low_warn.append(locs[i])
-        print ""
-        print "Warning: the following samples have an unusually low number of sequences, they will be thrown out: " + str(low_warn)
+        print("")
+        print("Warning: the following samples have an unusually low number of sequences, they will be thrown out: " + str(low_warn))
 
         low_seq_nums = []
         for i in range(0, len(low_warn)):
             for j in range(0, len(nums)-1):
                 if locs[j] == low_warn[i]:
                      low_seq_nums.append(nums[j])
-        print ""
+        print("")
         for i in range(0, len(low_warn)):
-            print low_warn[i] + " has " + low_seq_nums[i] + " sequences." #Prints those samples and their # of seqs
+            print(low_warn[i] + " has " + low_seq_nums[i] + " sequences.") #Prints those samples and their # of seqs
 
         #Following loop removes those found low sequences names and numbers from the orig lists
         for i in range(0, len(low_warn)):
@@ -410,7 +414,7 @@ rule finalize_sequences:
             if float(nums[i]) < lowest:
                 lowest = float(nums[i])
                 ideal_loc = locs[i]
-        print ""
+        print("")
         print("The lowest number of sequences will be set to " + str(lowest) + " from " + ideal_loc + ".")
 
         ### remove controls ###
@@ -426,11 +430,11 @@ rule finalize_sequences:
                         locs.pop(j)
                         nums.pop(j)
 
-        f = open('.temp.locs', 'w')
+        f = open(wildcards.project+'.temp.locs', 'w')
         for i in range(0, len(locs)):
             f.write(str(locs[i]) + " \n")
         f.close()
-        f = open('.temp.nums', 'w')
+        f = open(wildcards.project+'.temp.nums', 'w')
         for i in range(0, len(nums)):
             f.write(str(nums[i]) + " \n")
         f.close()
@@ -478,7 +482,7 @@ rule remove:
         #os.system()
         outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T);" +
                             "classify.seqs(fasta="+fasta+", name="+names+", group="+groups+
-                            ", template="+trainset=".fasta, taxonomy="+trainset+".tax, cutoff=80, processors="+str(nprocessors)+")\"", [".taxonomy"])
+                            ", template="+trainset+"=.fasta, taxonomy="+trainset+".tax, cutoff=80, processors="+str(nprocessors)+")\"", [".taxonomy"])
 
 
         taxonomy = outputs[".taxonomy"]
@@ -491,7 +495,7 @@ rule remove:
 rule process_sequences:
     input:
         fasta='{project}.unique.fasta',
-        names='{project}.unique.names'
+        names='{project}.unique.names',
         groups='{project}.unique.groups'
     output:
         '{project}.process.fasta',
@@ -561,13 +565,13 @@ rule process_sequences:
                             "filter.seqs(fasta="+fasta+", vertical=T, trump=., processors="+str(nprocessors)+")\"", [".fasta"])
 
         fasta = outputs[".fasta"]
-        print fasta
+        print(fasta)
 
         # should get some more unique sequences
         outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); unique.seqs(fasta="+fasta+", name="+names+")\"", [".fasta",".names"])
 
         fasta = outputs[".fasta"]
-        print fasta
+        print(fasta)
         names = outputs[".names"]
 
         os.system("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fasta+", name="+names+")\"")
@@ -640,6 +644,7 @@ rule trim_sequences:
 
 
 rule load:
+    input: sff=expand('{filename}.sff', filename = SFF_FILE_NAMES)
     output: '{project}.fasta', '{project}.names', '{project}.groups'
     run:
         with open('run.json') as data_file:
@@ -650,8 +655,9 @@ rule load:
         bdiffs = run["setup"]["454"]["bdiffs"]
         project = run["setup"]["proj"]
         
-        sff = subprocess.Popen('find '+DATAPATH+' -name *.sff', shell = True, stdout=subprocess.PIPE).communicate()[0]
-        sff = sff.rsplit('\n')
+        #sff = subprocess.Popen('find '+DATAPATH+' -name *.sff', shell = True, stdout=subprocess.PIPE).communicate()[0]
+        #sff = sff.rsplit('\n')
+        sff = input.sff
 
         # this is the repository for all sff files
         os.system("printf '' > all.flow.files")
