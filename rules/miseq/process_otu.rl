@@ -15,12 +15,12 @@ rule miseq_process_otu:
         with open('run.json') as data_file:
             run = json.load(data_file)
         nprocessors = run["setup"]["nprocessors"] #is there a better way of globally defining this earlier on?
-        dist_cutoff = run["setup"]["distseqs_cutoff"]
+                
         
 
 
         ### OTUs ###
-        outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); dist.seqs(fasta="+input.fasta+", cutoff="+distseqs_cutoff+", processors="+str(nprocessors)+")\"", [".dist"])
+        outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); dist.seqs(fasta="+input.fasta+", cutoff=0.20, processors="+str(nprocessors)+")\"", [".dist"])
         dist = outputs[".dist"]
         
 

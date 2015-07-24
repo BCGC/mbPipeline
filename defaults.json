@@ -23,17 +23,10 @@
 			"bdiffs": "1"
 		},
 		"miseq": {
-			"rules": [],
+			"rules": ["all", "graph", "data_setup", "beta_data", "miseq/process_otu", 
+				  "miseq/finalize_sequences", "miseq/remove", "miseq/process_sequences",
+				  "miseq/unique_sequnces", "miseq/screen_sequences", "miseq/load"],
 			"trainset": "trainset9_032012.pds",
-			"maxambig": "0",
-			"maxlength": "275",
-			"pcrseqs_start": "11894",
-			"pcrseqs_end": "25319",
-			"screenseqs_start": "1968",
-			"screenseqs_end": "11550",
-			"maxhomop": "8",
-			"taxon": "Chloroplast-Mitochondria-unknown-Archaea-Eukaryota",
-			"groups1": "Mock",
 			"seqerror_reference": "HMP_MOCK.v35.fasta"
 		}
 	},

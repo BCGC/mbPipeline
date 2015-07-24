@@ -10,25 +10,21 @@ rule miseq_process_sequences:
         with open('run.json') as data_file:
             run = json.load(data_file)
         nprocessors = run["setup"]["nprocessors"]
-        pcrseqs_reference = run["setup"]["miseq"]["pcrseqs_reference"]
-        pcrseqs_start = run["setup"]["miseq"]["pcrseqs_start"]
-        keepdots = run ["setup"]["miseq"]["keepdots"]
-        screenseqs_start = run ["setup"]["miseq"]["screenseqs_start"]
-        screenseqs_end = run ["setup"]["miseq"]["screenseqs_end"]
-        maxhomop = run ["setup"]["miseq"]["maxhomop"]
-        vertical = run ["setup"]["miseq"]["vertical"]
-        trump = run ["setup"]["miseq"]["trump"]
-        
+        silva = run["setup"]["miseq"]["silva"]
 
+            
+        
+# check how to at on on to silva
+#find way to find start and end for pcr and screen
        
         outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T);"+
-                            "pcr.seqs(fasta="+pcrseqs_reference+", start="+pcrseqs_start+",end="+pcrseqs_end+", keepdots="+keepdots+", processors=8)\"",[".fasta"])
-        #name variable [".fasta"]
+                            "pcr.seqs(fasta="+silva+", start=11894,end=25319, keepdots=F, processors=8)\"",[".fasta"])
+        silva= outputs[".fasta"]
         outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T);" +
-                            "align.seqs(fasta="+input.fasta+", reference="+pcrseqs_reference+", flip=F, processors="+str(nprocessors)+")\"", [".align"])
+                            "align.seqs(fasta="+input.fasta+", reference="+input.silva+", flip=F, processors="+str(nprocessors)+")\"", [".align"])
 
         align= outputs[".align"]
-        p = subprocess.Popen("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+align+", count="+input.count+")\"", stdout=subprocess.PIPE, shell=True)
+        p = subprocess.Popen("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+input.align+", count="+input.count+")\"", stdout=subprocess.PIPE, shell=True)
         out = p.communicate()[0]
         p.wait()
         out = out[out.find("97.5%-tile:")+12:len(out)]
@@ -65,7 +61,7 @@ rule miseq_process_sequences:
         end = str(int(numpy.percentile(end, 50)))
 
         outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T);" + 
-                            " screen.seqs(fasta="+input.align+", count="+input.count+", summary="+input.summary+", start="+screenseqs_start+", end="+screenseqs_end+", maxhomop="+maxhomop+")\", [".align",".count",".summary"]")
+                            " screen.seqs(fasta="+input.align+", count="+input.count+", summary="+input.summary+", start=1968, end=11550, maxhomop=8)\", [".align",".count",".summary"]")
 
         fasta = outputs[".align"]
         count = outputs[".count"]

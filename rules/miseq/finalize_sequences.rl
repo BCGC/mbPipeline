@@ -18,10 +18,8 @@ rule miseq_finalize_sequences:
         os.system("cp "+input.taxonomy+" "+wildcards.project+"final.taxonomy")
         taxonomy = wildcards.project+'final.taxonomy'
         run = json.load(data_file)
-            groups1 = run["setup"]["miseq"]["groups1"]
             seqerror_reference = run["setup"]["miseq"]["seqerror_reference"]
-            aligned = run["setup"]["miseq"]["aligned"]
-            distseqs_cutoff = run["setup"]["miseq"]["distseqs_cutoff"]
+            
         ### get sequence data ###
 
         os.system("rm .seq_data.out") #in case a prior file by this name existed
@@ -154,7 +152,7 @@ rule miseq_finalize_sequences:
             f.write(str(nums[i]) + " \n")
         f.close()
 
-        outputs=sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); get.groups(count="+input.count+", fasta="+input.fasta+", groups="+groups1+")\"")
+        outputs=sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); get.groups(count="+input.count+", fasta="+input.fasta+", groups=Mock)\"")
         fasta=outputs[".fasta"]
         count=outputs[".count"]
 
@@ -162,7 +160,7 @@ rule miseq_finalize_sequences:
  
 
         #measure the error rates
-        output=sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); seq.error(fasta="+input.fasta+", reference="+seqerror_reference+", aligned="+aligned+")\"")
+        output=sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); seq.error(fasta="+input.fasta+", reference="+seqerror_reference+", aligned=F)\"")
         summary=outputs["summary"]
 
 
@@ -172,7 +170,7 @@ rule miseq_finalize_sequences:
         outputs=sysio_get("Rscript seqerror.R  "+input.summary+"  "+input.count+"") 
         #/Users/browndd/Desktop/MiseqPipeline
         #This string of commands will produce a file for you
-        outputs=sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); dist.seqs(fasta="+input.fasta+", cutoff="+distseqs_cutoff+")\"")
+        outputs=sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); dist.seqs(fasta="+input.fasta+", cutoff=0.20)\"")
         column=outputs[".column"]
 
         outputs=sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); cluster(column="+input.column+", count="+input.count+")\"")     #runs well
@@ -189,4 +187,4 @@ rule miseq_finalize_sequences:
         ###Preparing for analysis
 
         #we want to remove the Mock sample from our dataset
-        outputs=sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); remove.groups(count="+input.count+", fasta="+input.fasta+", taxonomy="+input.taxonomy2+", groups="+groups1+")\""[".fasta",".count",".taxonomy"], wildcards.project+".final")
+        outputs=sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); remove.groups(count="+input.count+", fasta="+input.fasta+", taxonomy="+input.taxonomy2+", groups=Mock)\""[".fasta",".count",".taxonomy"], wildcards.project+".final")

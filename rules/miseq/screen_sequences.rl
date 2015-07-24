@@ -6,10 +6,6 @@ rule screen_sequences:
         '{project}.screen.fasta'
         '{project}.screen.groups'
     run:
-         with open('run.json') as data_file:
-            run = json.load(data_file)
-        maxambig= run["setup"]["miseq"]["maxambig"]
-        maxlength= run["setup"]["miseq"]["maxlength"]
-        sysio_set("mothur \"#set.logfile(name=master.logfile, append=T); screen.seqs(fasta="+input.fasta+", group="+input.groups+", maxambig="+maxambig+", maxlength="+maxlength+")\""[".fasta",".group"], wildcards.project+".screen")  
+      outputs = sysio_set("mothur \"#set.logfile(name=master.logfile, append=T); screen.seqs(fasta="+input.fasta+", group="+input.groups+", maxambig=0, maxlength=275)\""[".fasta",".group"], wildcards.project+".screen")  
         
 
