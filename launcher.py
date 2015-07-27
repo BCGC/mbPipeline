@@ -62,7 +62,7 @@ with open('run.json', 'r+') as f:
 	for file_name in src_files:
 		full_file_name = os.path.join(+installed+ "/ref" +file_name)
 		if(os.path.isfile(full_file_name)):
-			shutil.copy(full_file_name, REFPATH)
+			os.system("ln -fs" + full_file_name + "")
 
 	if os.path.isdir(REFPATH):
 		if not os.path.isfile(REFPATH +"/"oligos.txt + ""):
