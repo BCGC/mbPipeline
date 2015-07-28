@@ -288,7 +288,6 @@ rule finalize_sequences:
         fasta='{project}.remove.fasta',
         names='{project}.remove.names',
         groups='{project}.remove.groups',
-        taxonomy = '{project}.remove.taxonomy'
     output:
         '{project}.final.fasta',
         '{project}.final.names',
@@ -304,9 +303,7 @@ rule finalize_sequences:
         names = wildcards.project+'final.names'
         os.system("cp "+input.groups+" "+wildcards.project+".final.groups")
         groups = wildcards.project+'final.groups'
-        os.system("cp "+input.taxonomy+" "+wildcards.project+"final.taxonomy")
-        taxonomy = wildcards.project+'final.taxonomy'
-
+        
         ### get sequence data ###
 
         os.system("rm .seq_data.out") #in case a prior file by this name existed

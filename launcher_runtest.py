@@ -247,5 +247,9 @@ with open('run.json', 'r+') as f:
 #				f_snakefile.write(line)
 
 print("LAUNCHING SNAKEMAKE")			 
-os.system("snakemake --dryrun --dag")
+os.system("snakemake --dryrun --dag --allow-ambiguity | dot -Tpdf > dag.pdf")
+
+
+#HOW TO RUN THIS LAUNCHER TEST:
+#python /Users/gowdanb/Desktop/mbPipeline/Unified/launcher_runtest.py pipeline=454 metadata=nometa.txt refpath=../reference datapath=../data trainset=trainset7_112011.pds project=test1
 		 
