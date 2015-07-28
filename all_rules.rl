@@ -303,7 +303,7 @@ rule finalize_sequences:
         names = wildcards.project+'final.names'
         os.system("cp "+input.groups+" "+wildcards.project+".final.groups")
         groups = wildcards.project+'final.groups'
-        
+
         ### get sequence data ###
 
         os.system("rm .seq_data.out") #in case a prior file by this name existed
@@ -445,7 +445,7 @@ rule remove:
     output:
         '{project}.remove.fasta',
         '{project}.remove.names',
-        '{project}.remove.groups'
+        '{project}.remove.groups',
         '{project}.remove.taxonomy'
     run:
         with open('run.json') as data_file:
@@ -493,7 +493,7 @@ rule process_sequences:
     input:
         fasta='{project}.unique.fasta',
         names='{project}.unique.names',
-        groups='{project}.unique.groups'
+        groups='{project}.load.groups'
     output:
         '{project}.process.fasta',
         '{project}.process.names',
@@ -585,7 +585,7 @@ rule process_sequences:
 #    input:
 #        fasta='{project}.unique.fasta',
 #        names='{project}.unique.names'
-#        groups='{project}.groups'
+#        groups='{project}.load.groups'
 #    output:
 #        '{project}.preprocessed.fasta',
 #        '{project}.preprocessed.names',
@@ -624,8 +624,8 @@ rule unique_sequences:
 
 rule trim_sequences:
     input:
-        fasta='{project}.fasta',
-        names='{project}.names'
+        fasta='{project}.load.fasta',
+        names='{project}.load.names'
     output:
         '{project}.trim.fasta',
         '{project}.trim.names'
@@ -642,7 +642,7 @@ rule trim_sequences:
 
 rule load:
     input: sff=expand('{filename}.sff', filename = SFF_FILE_NAMES)
-    output: '{project}.fasta', '{project}.names', '{project}.groups'
+    output: '{project}.load.fasta', '{project}.load.names', '{project}.load.groups'
     run:
         with open('run.json') as data_file:
             run = json.load(data_file)
@@ -676,7 +676,7 @@ rule load:
 
         flows = 'all.flow.files'
         sysio_set("mothur \"#set.logfile(name=master.logfile, append=T);" +
-                  "shhh.flows(file="+flows+", processors="+str(nprocessors)+")\"", [".fasta",".names",".groups"], proj+".")
+                  "shhh.flows(file="+flows+", processors="+str(nprocessors)+")\"", [".fasta",".names",".groups"], proj+".load.")
 
         # check our sequences as of right now
         # 0:seqname 1:start 2:end 3:nbases 4:ambigs 5:polymer 6:numSeqs

@@ -247,7 +247,7 @@ with open('run.json', 'r+') as f:
 #				f_snakefile.write(line)
 
 print("LAUNCHING SNAKEMAKE")			 
-os.system("snakemake --dryrun --dag --allow-ambiguity | dot -Tpdf > dag.pdf")
+os.system("snakemake --dryrun")
 
 
 #HOW TO RUN THIS LAUNCHER TEST:
