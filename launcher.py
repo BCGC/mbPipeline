@@ -244,5 +244,5 @@ with open("Snakefile", "w") as f_snakefile:
 				f_snakefile.write(line)
 
 			 
-### INSERT CODE TO LAUNCH SNAKEMAKE HERE
+os.system("snakemake")
 		 

@@ -4,12 +4,12 @@
 import os
 import json
 
-#with open('run.json') as data_file:
-#    run = json.load(data_file)
-#PROJECT = run["setup"]["proj"]
-#SFF_FILE_NAMES = run["setup"]["sff"]
-SFF_FILE_NAMES = ["one", "two"]
-PROJECT='test'
+with open('run.json') as data_file:
+    run = json.load(data_file)
+PROJECT = run["setup"]["proj"]
+SFF_FILE_NAMES = run["setup"]["sff"]
+#SFF_FILE_NAMES = ["one", "two"]
+#PROJECT='test'
 def sysio_set(cmd, extensions, newprefix):
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
     out = p.communicate()[0]
