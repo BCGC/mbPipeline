@@ -58,9 +58,9 @@ with open('run.json', 'r+') as f:
 			REFPATH = "."
 			print("Warning: Reference data path not specified! Will try and use default directory.")
 
-	src_files = os.listdir(+installed+ "/ref")
+	src_files = os.listdir(installed+ "/ref/" +pipeline+ "/")
 	for file_name in src_files:
-		full_file_name = os.path.join(+installed+ "/ref" +file_name)
+		full_file_name = os.path.join(installed+ "/ref/" +pipeline+ "/" +file_name)
 		if(os.path.isfile(full_file_name)):
 			os.system("ln -fs" + full_file_name + "")
 

@@ -18,7 +18,7 @@
 			"rules": ["all", "graph", "data_setup", "beta_data", "454/process_otu", "454/finalize_sequences",
 				  "454/remove_454", "454/process", "454/remove", "454/process_sequences",
 				  "454/unique_sequences", "454/trim_sequences", "454/load"],
-			"trainset": "trainset7_112011.pds",
+			"trainset": "trainset9_032012.pds",
 			"pdiffs": "2",
 			"bdiffs": "1"
 		},
