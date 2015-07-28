@@ -71,8 +71,8 @@ with open('run.json', 'r+') as f:
 		os.system("ln -fs " + REFPATH + "/trainset* .")
 		os.system("ln -fs " + REFPATH + "/LookUp_Titanium.pat .")
 		os.system("ln -fs " + REFPATH + "/silva.* .")
-		if not os.path.isfile(REFPATH + "/" + metadata + ""):
-			raise Exception("Matadata file not in reference directory!")
+		#if not os.path.isfile(REFPATH + "/" + metadata + ""):
+		#	raise Exception("Matadata file not in reference directory!")
 		os.system("ln -fs " + REFPATH + "/" + metadata + "")
 		if run["setup"]["arecontrols"] == "1":
 			if not os.path.isfile(REFPATH + "/" + controlsfile + ""):
@@ -236,16 +236,16 @@ with open('run.json', 'r+') as f:
 	f.truncate()
 
 				
-with open('run.json') as data_file:
-	run = json.load(data_file)
-	rulefiles = run["setup"][pipeline]["rules"]
+#with open('run.json') as data_file:
+#	run = json.load(data_file)
+#	rulefiles = run["setup"][pipeline]["rules"]
+#
+#with open("Snakefile", "w") as f_snakefile:
+#	for file in rulefiles:
+#		with open(file) as f_rulefile:
+#			for line in f_rulefile:
+#				f_snakefile.write(line)
 
-with open("Snakefile", "w") as f_snakefile:
-	for file in rulefiles:
-		with open(file) as f_rulefile:
-			for line in f_rulefile:
-				f_snakefile.write(line)
-
-print("LAUNCHING SNAKEMAKE")
-os.system("snakemake")
+print("LAUNCHING SNAKEMAKE")			 
+os.system("snakemake --dryrun --dag")
 		 
