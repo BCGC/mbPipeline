@@ -676,7 +676,7 @@ rule load:
 
         flows = 'all.flow.files'
         sysio_set("mothur \"#set.logfile(name=master.logfile, append=T);" +
-                  "shhh.flows(file="+flows+", processors="+str(nprocessors)+")\"", [".fasta",".names",".groups"], proj+".load.")
+                  "shhh.flows(file="+flows+", processors="+str(nprocessors)+")\"", [".fasta",".names",".groups"], project+".load.")
 
         # check our sequences as of right now
         # 0:seqname 1:start 2:end 3:nbases 4:ambigs 5:polymer 6:numSeqs
