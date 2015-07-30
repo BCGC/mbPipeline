@@ -647,7 +647,7 @@ rule load:
         with open('run.json') as data_file:
             run = json.load(data_file)
         DATAPATH = run["setup"]["datapath"]
-        nprocessors = run["setup"]["datapath"]
+        nprocessors = run["setup"]["nprocessors"]
         pdiffs = run["setup"]["454"]["pdiffs"]
         bdiffs = run["setup"]["454"]["bdiffs"]
         project = run["setup"]["proj"]

@@ -62,7 +62,7 @@ with open('run.json', 'r+') as f:
 	for file_name in src_files:
 		full_file_name = os.path.join(installed+ "/ref/" +pipeline+ "/" +file_name)
 		if(os.path.isfile(full_file_name)):
-			os.system("ln -fs" + full_file_name + "")
+			os.system("ln -fs " + full_file_name + " .")
 
 	if os.path.isdir(REFPATH):
 		if not os.path.isfile(REFPATH +"/oligos.txt"):
@@ -73,11 +73,11 @@ with open('run.json', 'r+') as f:
 		os.system("ln -fs " + REFPATH + "/silva.* .")
 		#if not os.path.isfile(REFPATH + "/" + metadata + ""):
 		#	raise Exception("Matadata file not in reference directory!")
-		os.system("ln -fs " + REFPATH + "/" + metadata + "")
+		os.system("ln -fs " + REFPATH + "/" + metadata + " .")
 		if run["setup"]["arecontrols"] == "1":
 			if not os.path.isfile(REFPATH + "/" + controlsfile + ""):
 				raise Exception("Controls file not in reference directory!")
-			os.system("ln -fs " + REFPATH + "/" +  controlsfile + "")
+			os.system("ln -fs " + REFPATH + "/" +  controlsfile + " .")
 	else:
 		raise Exception("Bad value for refpath.")
 
@@ -208,7 +208,7 @@ with open('run.json', 'r+') as f:
 		classify_cutoff = args['classify_cutoff']
 		run["setup"]["classify_cutoff"] = classify_cutoff
 	except KeyError:
-		print("Using defaults for cut_cutoff")
+		print("Using defaults for classify_cutoff")
 	try:
 		dist_cutoff = args['dist_cutoff']
 		run["setup"]["dist_cutoff"] = dist_cutoff
@@ -246,8 +246,27 @@ with open('run.json', 'r+') as f:
 #			for line in f_rulefile:
 #				f_snakefile.write(line)
 
-print("LAUNCHING SNAKEMAKE")			 
-os.system("snakemake --dryrun --dag | dot -Tpdf > dag.pdf")
+print("")
+
+from sys import version_info
+
+py3 = version_info[0] > 2 #creates boolean value for test that Python major version > 2
+
+if py3:
+	response = input("Setup complete, launch pipeline? (yes or no) : ")
+	if not((response == "yes") | (response == "y")) :
+		raise Exception("TERMINATING: User did not approve initiation of pipeline.")
+
+else:
+	response = raw_input("Setup complete, launch pipeline? (yes or no) : ")
+	if not((response == "yes") | (response == "y")) :
+		raise Exception("TERMINATING: User did not approve initiation of pipeline.")
+
+print("")
+print("LAUNCHING SNAKEMAKE")
+os.system("snakemake")
+#os.system("snakemake --dryrun")		 
+#os.system("snakemake --dag | dot -Tpdf > dag.pdf")
 
 
 #HOW TO RUN THIS LAUNCHER TEST:
