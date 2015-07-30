@@ -3,6 +3,7 @@
 
 import os
 import json
+import subprocess
 
 with open('run.json') as data_file:
     run = json.load(data_file)
