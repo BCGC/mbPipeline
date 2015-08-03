@@ -4,6 +4,7 @@
 import os
 import json
 import subprocess
+from io import StringIO
 
 with open('run.json') as data_file:
     run = json.load(data_file)
@@ -12,9 +13,12 @@ SFF_FILE_NAMES = run["setup"]["sff"]
 #SFF_FILE_NAMES = ["one", "two"]
 #PROJECT='test'
 def sysio_set(cmd, extensions, newprefix):
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
-    out = p.communicate()[0]
-    p.wait()
+    with subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True, bufsize=1, universal_newlines=True) as p, StringIO() as buf:
+        for line in p.stdout:
+            print(line, end='')
+            buf.write(line)
+        out=buf.getvalue()
+    rc = p.returncode()
     for extension in extensions :
         current = out[out[0:out.rfind(extension)].rfind("\n")+1:out[out.rfind(extension):len(out)].find("\n")+out.rfind(extension)]
         new = prefix + extension
