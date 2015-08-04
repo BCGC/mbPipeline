@@ -4,6 +4,8 @@
 import os
 import json
 import subprocess
+import numpy
+import warnings
 from io import StringIO
 
 with open('run.json') as data_file:
@@ -13,21 +15,24 @@ SFF_FILE_NAMES = run["setup"]["sff"]
 #SFF_FILE_NAMES = ["one", "two"]
 #PROJECT='test'
 def sysio_set(cmd, extensions, newprefix):
+    out=""
     with subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True, bufsize=1, universal_newlines=True) as p, StringIO() as buf:
         for line in p.stdout:
             print(line, end='')
             buf.write(line)
         out=buf.getvalue()
-    rc = p.returncode()
     for extension in extensions :
         current = out[out[0:out.rfind(extension)].rfind("\n")+1:out[out.rfind(extension):len(out)].find("\n")+out.rfind(extension)]
         new = prefix + extension
         os.system("cp "+current+" "+new+"")
 
 def sysio_get(cmd, extensions):
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
-    out = p.communicate()[0]
-    p.wait()
+    out=""
+    with subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True, bufsize=1, universal_newlines=True) as p, StringIO() as buf:
+        for line in p.stdout:
+            print(line, end='')
+            buf.write(line)
+        out=buf.getvalue()
     outputs = {}
     for extension in extensions :
         current = out[out[0:out.rfind(extension)].rfind("\n")+1:out[out.rfind(extension):len(out)].find("\n")+out.rfind(extension)]
@@ -498,7 +503,7 @@ rule process_sequences:
     input:
         fasta='{project}.unique.fasta',
         names='{project}.unique.names',
-        groups='{project}.load.groups'
+        groups='{project}.trim.groups'
     output:
         '{project}.process.fasta',
         '{project}.process.names',
@@ -590,7 +595,7 @@ rule process_sequences:
 #    input:
 #        fasta='{project}.unique.fasta',
 #        names='{project}.unique.names'
-#        groups='{project}.load.groups'
+#        groups='{project}.trim.groups'
 #    output:
 #        '{project}.preprocessed.fasta',
 #        '{project}.preprocessed.names',
@@ -633,7 +638,8 @@ rule trim_sequences:
         names='{project}.load.names'
     output:
         '{project}.trim.fasta',
-        '{project}.trim.names'
+        '{project}.trim.names',
+        '{project}.trim.groups'
     run:
         with open('run.json') as data_file:
             run = json.load(data_file)
@@ -642,12 +648,12 @@ rule trim_sequences:
         nprocessors = run["setup"]["nprocessors"]
         sysio_set("mothur \"#set.logfile(name=master.logfile, append=T); trim.seqs(fasta="+input.fasta+
                   ", name="+input.names+", oligos=oligos.txt, pdiffs="+pdiffs+", bdiffs="+bdiffs+
-                  ", maxhomop=8, minlength=200, flip=T processors="+str(nprocessors)+")\"", [".fasta", ".names"], wildcards.project+".trim")
+                  ", maxhomop=8, minlength=200, flip=T processors="+str(nprocessors)+")\"", [".fasta", ".names", ".groups"], wildcards.project+".trim")
 
 
 rule load:
     input: sff=expand('{filename}.sff', filename = SFF_FILE_NAMES)
-    output: '{project}.load.fasta', '{project}.load.names', '{project}.load.groups'
+    output: '{project}.load.fasta', '{project}.load.names'
     run:
         with open('run.json') as data_file:
             run = json.load(data_file)
@@ -681,11 +687,11 @@ rule load:
 
         flows = 'all.flow.files'
         sysio_set("mothur \"#set.logfile(name=master.logfile, append=T);" +
-                  "shhh.flows(file="+flows+", processors="+str(nprocessors)+")\"", [".fasta",".names",".groups"], project+".load.")
+                  "shhh.flows(file="+flows+", processors="+str(nprocessors)+")\"", [".fasta",".names"], project+".load")
 
         # check our sequences as of right now
         # 0:seqname 1:start 2:end 3:nbases 4:ambigs 5:polymer 6:numSeqs
-        outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+proj+".fasta, name="+proj+".names)\"", [".summary"])
+        outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+project+".load.fasta, name="+project+".load.names)\"", [".summary"])
         summary = outputs[".summary"]
         summ = numpy.genfromtxt(summary, skiprows=1, dtype='str')
 
