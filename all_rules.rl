@@ -528,7 +528,7 @@ rule process_sequences:
 
         fastacheck = outputs[".align"]
         p = subprocess.Popen("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fastacheck+", name="+input.names+")\"", stdout=subprocess.PIPE, shell=True)
-        out = p.communicate()[0]
+        out = p.communicate()[0].decode("utf-8")
         p.wait()
         out = out[out.find("97.5%-tile:")+12:len(out)]
         out = out[out.find("\t")+1:len(out)]
@@ -630,7 +630,7 @@ rule unique_sequences:
         names = outputs[".names"]
 
         p = subprocess.Popen("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fasta+", name="+names+")\"", stdout=subprocess.PIPE, shell=True)
-        out = p.communicate()[0]
+        out = p.communicate()[0].decode("utf-8")
         p.wait()
         out = out[out.find("97.5%-tile:")+12:len(out)]
         out = out[out.find("\t")+1:len(out)]
@@ -674,8 +674,6 @@ rule load:
         bdiffs = run["setup"]["454"]["bdiffs"]
         project = run["setup"]["proj"]
         
-        #sff = subprocess.Popen('find '+DATAPATH+' -name *.sff', shell = True, stdout=subprocess.PIPE).communicate()[0]
-        #sff = sff.rsplit('\n')
         sff = input.sff
 
         # this is the repository for all sff files
