@@ -21,10 +21,16 @@ def sysio_set(cmd, extensions, newprefix):
             print(line, end='')
             buf.write(line)
         out=buf.getvalue()
+    outputs = {}
     for extension in extensions :
         current = out[out[0:out.rfind(extension)].rfind("\n")+1:out[out.rfind(extension):len(out)].find("\n")+out.rfind(extension)]
-        new = prefix + extension
+        if ".scrap"+extension in current:
+            out1 = out[0:out.rfind(current)+1]
+            current = out1[out1[0:out1.rfind(extension)].rfind("\n")+1:out1[out1.rfind(extension):len(out1)].find("\n")+out1.rfind(extension)]
+        new = newprefix + extension
         os.system("cp "+current+" "+new+"")
+        outputs[extension] = new
+    return outputs
 
 def sysio_get(cmd, extensions):
     out=""
@@ -36,6 +42,9 @@ def sysio_get(cmd, extensions):
     outputs = {}
     for extension in extensions :
         current = out[out[0:out.rfind(extension)].rfind("\n")+1:out[out.rfind(extension):len(out)].find("\n")+out.rfind(extension)]
+        if ".scrap"+extension in current:
+            out1 = out[0:out.rfind(current)]
+            current = out1[out1[0:out1.rfind(extension)].rfind("\n")+1:out1[out1.rfind(extension):len(out1)].find("\n")+out1.rfind(extension)]
         outputs[extension] = current
     return outputs
 
@@ -616,7 +625,9 @@ rule unique_sequences:
         '{project}.unique.fasta',
         '{project}.unique.names'
     run:
-        sysio_set("mothur \"#unique.seqs(fasta="+input.fasta+", name="+input.names+")\"", [".fasta",".names"], wildcards.project+".unique")
+        outputs = sysio_set("mothur \"#unique.seqs(fasta="+input.fasta+", name="+input.names+")\"", [".fasta",".names"], wildcards.project+".unique")
+        fasta = outputs[".fasta"]
+        names = outputs[".names"]
 
         p = subprocess.Popen("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fasta+", name="+names+")\"", stdout=subprocess.PIPE, shell=True)
         out = p.communicate()[0]
