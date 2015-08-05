@@ -325,7 +325,10 @@ else:
 
 print("")
 print("LAUNCHING SNAKEMAKE")
-os.system("snakemake -j "+nprocessors+"")
+if new:
+	os.system("snakemake -j "+nprocessors+" --forceall")
+else:
+	os.system("snakemake -j "+nprocessors+"")
 
 #example launcher start command:
 #python /Users/gowdanb/Desktop/mbPipeline/Unified/launcher.py pipeline=454 metadata=nometa.txt refpath=../reference datapath=../data trainset=trainset7_112011.pds project=test1
