@@ -24,7 +24,8 @@ def sysio_set(cmd, extensions, newprefix):
     outputs = {}
     for extension in extensions :
         current = out[out[0:out.rfind(extension)].rfind("\n")+1:out[out.rfind(extension):len(out)].find("\n")+out.rfind(extension)]
-        if ".scrap"+extension in current:
+        wrong_extension = [".scrap"+extension, extension+".report"]
+        if any(x in current for x in wrong_extension):
             out1 = out[0:out.rfind(current)+1]
             current = out1[out1[0:out1.rfind(extension)].rfind("\n")+1:out1[out1.rfind(extension):len(out1)].find("\n")+out1.rfind(extension)]
         new = newprefix + extension
@@ -42,7 +43,8 @@ def sysio_get(cmd, extensions):
     outputs = {}
     for extension in extensions :
         current = out[out[0:out.rfind(extension)].rfind("\n")+1:out[out.rfind(extension):len(out)].find("\n")+out.rfind(extension)]
-        if ".scrap"+extension in current:
+        wrong_extension = [".scrap"+extension, extension+".report"]
+        if any(x in current for x in wrong_extension):
             out1 = out[0:out.rfind(current)]
             current = out1[out1[0:out1.rfind(extension)].rfind("\n")+1:out1[out1.rfind(extension):len(out1)].find("\n")+out1.rfind(extension)]
         outputs[extension] = current
@@ -522,6 +524,7 @@ rule process_sequences:
             run = json.load(data_file)
         nprocessors = run["setup"]["nprocessors"]
         silva = run["setup"]["silva"]
+        nbases = run["storage"]["nbases"]
         # initial alignment
         outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T);" +
                             "align.seqs(fasta="+input.fasta+", reference="+silva+", flip=F, processors="+str(nprocessors)+")\"", [".align"])
