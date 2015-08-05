@@ -12,7 +12,7 @@ print('\n')
 
 installed = os.path.dirname(os.path.realpath(sys.argv[0]))
 
-if not os.system.isfile(installed+"/ref/454/silva.bacteria.fasta"):
+if not os.path.isfile(installed+"/ref/454/silva.bacteria.fasta"):
 	print("THIS SEEMS TO BE THE FIRST TIME YOU ARE USING mbPIPELINE")
 	print("mbPipeline is an open source automated workflow for analysing microbiome data")
 	print("Developed by Nikhil Gowda, Randall Johnson, Kira Vasquez, Dominique Brown")
@@ -284,11 +284,26 @@ with open('run.json') as data_file:
 	rulefiles = run["setup"][pipeline]["rules"]
 	nprocessors = run["setup"]["nprocessors"]
 
-with open("Snakefile", "w") as f_snakefile:
-	for file in rulefiles:
-		with open(file) as f_rulefile:
-			for line in f_rulefile:
-				f_snakefile.write(line)
+stitch = True
+if os.path.isfile("Snakefile"):
+	py3 = version_info[0] > 2 #creates boolean value for test that Python major version > 2
+
+	if py3:
+		response = input("WARNING SNAKEFILE EXISTS IN DIRECTORY. Overwrite? (yes or no) : ")
+		if not((response == "yes") | (response == "y")) :
+			stitch = False
+
+	else:
+		response = raw_input("WARNING SNAKEFILE EXISTS IN DIRECTORY. Overwrite? (yes or no) : ")
+		if not((response == "yes") | (response == "y")) :
+			stitch = False
+
+if stitch:
+	with open("Snakefile", "w") as f_snakefile:
+		for file in rulefiles:
+			with open(file) as f_rulefile:
+				for line in f_rulefile:
+					f_snakefile.write(line)
 
 print("")
 
