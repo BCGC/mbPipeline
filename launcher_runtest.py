@@ -239,7 +239,7 @@ if new:
 
 with open('run.json', 'r+') as f:
 	run = json.load(f)
-
+	DATAPATH = run["setup"]["datapath"]
 	import subprocess
 	sff = subprocess.Popen('find '+DATAPATH+' -name *.sff', shell = True, stdout=subprocess.PIPE).communicate()[0]
 	sff = sff.strip()
