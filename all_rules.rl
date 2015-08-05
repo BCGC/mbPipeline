@@ -482,9 +482,9 @@ rule remove:
         tmp = numpy.genfromtxt(accnos, dtype='str')
 
         # remove identified chimeras, throwing exception if all sequences were flagged as chimeras
-        fasta = ""
-        names = ""
-        groups = ""
+        fasta = input.fasta
+        names = input.names
+        groups = input.groups
         if tmp.shape[0] > 0:
             outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T);" +
                                 "remove.seqs(accnos="+accnos+", fasta="+fasta+", name="+names+", " +
