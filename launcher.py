@@ -57,6 +57,7 @@ if os.path.isfile("run.json"):
 		if choice.lower() == "true":
 			new = True
 			print("    -> new=true specified, overwriting run.json with defaults and specified arguments!")
+			os.system("cp "+installed+"/defaults.json run.json")
 	except KeyError:
 		print("    -> new!=true or new not specified, will not overwrite!")
 else:
@@ -285,6 +286,8 @@ with open('run.json') as data_file:
 	nprocessors = run["setup"]["nprocessors"]
 
 stitch = True
+from sys import version_info
+
 if os.path.isfile("Snakefile"):
 	py3 = version_info[0] > 2 #creates boolean value for test that Python major version > 2
 
@@ -301,13 +304,12 @@ if os.path.isfile("Snakefile"):
 if stitch:
 	with open("Snakefile", "w") as f_snakefile:
 		for filename in rulefiles:
-			with open(installed+"/rules/"filename+".rl") as f_rulefile:
+			with open(installed+"/rules/"+filename+".rl") as f_rulefile:
 				for line in f_rulefile:
 					f_snakefile.write(line)
 
 print("")
 
-from sys import version_info
 
 py3 = version_info[0] > 2 #creates boolean value for test that Python major version > 2
 
