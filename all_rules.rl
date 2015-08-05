@@ -309,6 +309,7 @@ rule finalize_sequences:
         fasta='{project}.remove.fasta',
         names='{project}.remove.names',
         groups='{project}.remove.groups',
+        taxonomy='{project}.remove.taxonomy'
     output:
         '{project}.final.fasta',
         '{project}.final.names',
@@ -319,11 +320,13 @@ rule finalize_sequences:
     run:
         # final files
         os.system("cp "+input.fasta+" "+wildcards.project+".final.fasta")
-        fasta = wildcards.project+'final.fasta'
+        fasta = wildcards.project+'.final.fasta'
         os.system("cp "+input.names+" "+wildcards.project+".final.names")
-        names = wildcards.project+'final.names'
+        names = wildcards.project+'.final.names'
         os.system("cp "+input.groups+" "+wildcards.project+".final.groups")
-        groups = wildcards.project+'final.groups'
+        groups = wildcards.project+'.final.groups'
+        os.system("cp "+input.taxonomy+" "+wildcards.project+".final.taxonomy")
+        taxonomy = wildcards.project+'.final.taxonomy'
 
         ### get sequence data ###
 
@@ -385,10 +388,10 @@ rule finalize_sequences:
         f = open('.temp.numseqs', 'w')
         for i in range(0, len(nums)):
             f.write(str(nums[i]) + " \n")
-            f.close()
+        f.close()
         with open('run.json', 'r+') as f:
             run = json.load(f)
-            run["storage"]["lines"] = ""+sum(1 for line in open('.temp.numseqs'))
+            run["storage"]["lines"] = ""+str(sum(1 for line in open('.temp.numseqs')))
             f.seek(0)
             f.write(json.dumps(run))
             f.truncate()
@@ -428,6 +431,7 @@ rule finalize_sequences:
             f.truncate()
         
         #The following part finds the sample with the lowest number of sequences (which is consider the ideal lowest)
+        ideal_loc=""
         for i in range(0, len(nums)):
             if float(nums[i]) < lowest:
                 lowest = float(nums[i])
@@ -508,7 +512,7 @@ rule remove:
         # remove contaminant mitochondria/chloroplast sequences
         sysio_set("mothur \"#set.logfile(name=master.logfile, append=T);" + 
                 "remove.lineage(fasta="+fasta+", name="+names+", group="+groups+", taxonomy="+taxonomy+
-                  ", taxon=Mitochondria-Cyanobacteria_Chloroplast-unknown)\"", [".taxonomy",".names",".groups",",fasta"], wildcards.project+".remove")
+                  ", taxon=Mitochondria-Cyanobacteria_Chloroplast-unknown)\"", [".taxonomy",".names",".groups",".fasta"], wildcards.project+".remove")
 
 rule process_sequences:
     input:
