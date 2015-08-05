@@ -300,8 +300,8 @@ if os.path.isfile("Snakefile"):
 
 if stitch:
 	with open("Snakefile", "w") as f_snakefile:
-		for file in rulefiles:
-			with open(file) as f_rulefile:
+		for filename in rulefiles:
+			with open(installed+"/rules/"filename+".rl") as f_rulefile:
 				for line in f_rulefile:
 					f_snakefile.write(line)
 
