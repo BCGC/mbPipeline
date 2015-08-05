@@ -282,5 +282,5 @@ else:
 
 print("")
 print("LAUNCHING SNAKEMAKE")
-os.system("snakemake")
+os.system("snakemake -j 16 --dag | dot -Tpdf > dag.pdf")
 		 
