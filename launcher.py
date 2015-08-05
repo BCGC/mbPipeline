@@ -12,7 +12,7 @@ print('\n')
 
 installed = os.path.dirname(os.path.realpath(sys.argv[0]))
 
-if os.system.isfile(installed+"/ref/454/silva.bacteria.fasta.zip"):
+if not os.system.isfile(installed+"/ref/454/silva.bacteria.fasta"):
 	print("THIS SEEMS TO BE THE FIRST TIME YOU ARE USING mbPIPELINE")
 	print("mbPipeline is an open source automated workflow for analysing microbiome data")
 	print("Developed by Nikhil Gowda, Randall Johnson, Kira Vasquez, Dominique Brown")
