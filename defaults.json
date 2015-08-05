@@ -16,15 +16,14 @@
 		"silva": "silva.bacteria.fasta",
 		"454": {
 			"rules": ["head", "all", "graph", "data_setup", "beta_data", "454/process_otu", "454/finalize_sequences",
-				  "454/remove_454", "454/process", "454/remove", "454/process_sequences",
-				  "454/unique_sequences", "454/trim_sequences", "454/load"],
+				  "454/remove_sequences", "454/process_sequences", "454/unique_sequences", "454/trim_sequences", "454/load"],
 			"trainset": "trainset9_032012.pds",
 			"pdiffs": "2",
 			"bdiffs": "1"
 		},
 		"miseq": {
 			"rules": ["head", "all", "graph", "data_setup", "beta_data", "miseq/process_otu", 
-				  "miseq/finalize_sequences", "miseq/remove", "miseq/process_sequences",
+				  "miseq/finalize_sequences", "miseq/remove_sequences", "miseq/process_sequences",
 				  "miseq/unique_sequnces", "miseq/screen_sequences", "miseq/load"],
 			"trainset": "trainset9_032012.pds",
 			"seqerror_reference": "HMP_MOCK.v35.fasta"
