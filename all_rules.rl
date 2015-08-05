@@ -244,7 +244,7 @@ rule process_otu:
         lowest = run["storage"]["lowest"]
         try:
             lowest = int(lowest)
-        Except ValueError:
+        except ValueError:
             lowest = int(float(lowest))
         
         ### OTUs ###
