@@ -12,6 +12,32 @@ print('\n')
 
 installed = os.path.dirname(os.path.realpath(sys.argv[0]))
 
+if os.system.isfile(installed+"/ref/454/silva.bacteria.fasta.zip"):
+	print("THIS SEEMS TO BE THE FIRST TIME YOU ARE USING mbPIPELINE")
+	print("mbPipeline is an open source automated workflow for analysing microbiome data")
+	print("Developed by Nikhil Gowda, Randall Johnson, Kira Vasquez, Dominique Brown")
+	print("Written in Python (utilizing Snakemake)")
+	print("Uses mbGraphics package for R developed by Nikhil Gowda")
+	print("Uses mothur:")
+	print("Schloss, P.D., et al., Introducing mothur: Open-source, platform-independent, community-supported software for describing and comparing microbial communities. Appl Environ Microbiol, 2009. 75(23):7537-41")
+	print("")
+	print("")
+	print("")
+	print("Please wait, extracting files...")
+	import zipfile
+	zip_ref = zipfile.ZipFile(installed+"/ref/454/silva.bacteria.fasta.zip", 'r')
+	zip_ref.extractall(installed+"/ref/454")
+	zip_ref.close()
+	#INSERT OTHER MISEQ EXTRACTIONS HERE
+	print("")
+	print("Extraction complete")
+	print("")
+
+print("Initializing mbPipeline")
+print("")
+print("Please read any following warnings or messages before launching:")
+print("")
+
 ######### SETUP DEFAULT VALUES #############
 try:
 	PATH = args['workdir']
@@ -192,9 +218,7 @@ if new:
 				seq_reference = args['seq_reference']
 				run["setup"][pipeline]["seq_reference"] = seq_reference
 			except KeyError: 
-				print("Using default seq_reference.")   
-
-
+				print("Using default seq_reference.")
 
 
 		try:
@@ -253,10 +277,12 @@ with open('run.json', 'r+') as f:
 	f.seek(0)
 	f.write(json.dumps(run))
 	f.truncate()
-				
+
+nprocessors = "1"				
 with open('run.json') as data_file:
 	run = json.load(data_file)
 	rulefiles = run["setup"][pipeline]["rules"]
+	nprocessors = run["setup"]["nprocessors"]
 
 with open("Snakefile", "w") as f_snakefile:
 	for file in rulefiles:
@@ -282,5 +308,5 @@ else:
 
 print("")
 print("LAUNCHING SNAKEMAKE")
-os.system("snakemake -j 16 --dag | dot -Tpdf > dag.pdf")
+os.system("snakemake -j "+nprocessors+" --dag | dot -Tpdf > dag.pdf")
 		 
