@@ -500,7 +500,7 @@ rule remove:
         #os.system()
         outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T);" +
                             "classify.seqs(fasta="+fasta+", name="+names+", group="+groups+
-                            ", template="+trainset+"=.fasta, taxonomy="+trainset+".tax, cutoff=80, processors="+str(nprocessors)+")\"", [".taxonomy"])
+                            ", template="+trainset+".fasta, taxonomy="+trainset+".tax, cutoff=80, processors="+str(nprocessors)+")\"", [".taxonomy"])
 
 
         taxonomy = outputs[".taxonomy"]
