@@ -83,7 +83,7 @@ rule data_setup:
         barcode = ["meta", "Barcode"]
         with open('run.json') as data_file:
             run = json.load(data_file)
-        num_lines = run["storage"]["lines"]
+        num_lines = int(run["storage"]["lines"])
         metadata = run["setup"]["metadata"]
         indvars = run["setup"]["indvars"]
 
@@ -155,10 +155,10 @@ rule data_setup:
             shutil.copy2("final_data.txt", wildcards.project+"mb_graphics_data.txt")
             
 rule beta_data:
-    input: '{project}.final.shared'
+    input: shared = '{project}.final.shared'
     output: '{project}.beta_data.out'
     run:
-        outputs = sysio_get("mothur \"#summary.shared(shared="+input+", calc=thetayc)\"", [".summary"])
+        outputs = sysio_get("mothur \"#summary.shared(shared="+input.shared+", calc=thetayc)\"", [".summary"])
         summary = outputs[".summary"]
 
         os.system("cut -f2 "+summary+" > .temp_sample1.out")
@@ -242,6 +242,10 @@ rule process_otu:
         nprocessors = run["setup"]["nprocessors"] #is there a better way of globally defining this earlier on?
         dist_cutoff = run["setup"]["dist_cutoff"]
         lowest = run["storage"]["lowest"]
+        try:
+            lowest = int(lowest)
+        Except ValueError:
+            lowest = int(float(lowest))
         
         ### OTUs ###
         outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); dist.seqs(fasta="+input.fasta+", cutoff="+dist_cutoff+", processors="+str(nprocessors)+")\"", [".dist"])
@@ -254,7 +258,7 @@ rule process_otu:
         shared = outputs[".shared"]
         os.system("cp "+shared+" "+wildcards.project+".final.shared") #CHECK IF THIS IS THE APPOPRIATE WAY TO GET WILDCARD!!!
 
-        outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); sub.sample(shared="+shared+", size="+str(int(lowest))+")\"", [".subsample.shared"])
+        outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); sub.sample(shared="+shared+", size="+str(lowest)+")\"", [".subsample.shared"])
         subsample_shared = outputs[".subsample.shared"]
 
         outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); classify.otu(list="+anlist+", name="+input.names+", taxonomy="+input.taxonomy+", label=0.03)\"", [])
@@ -262,13 +266,13 @@ rule process_otu:
         outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); phylotype(taxonomy="+input.taxonomy+", name="+input.names+", label=1)\"", [".tx.list"])
         txlist = outputs[".tx.list"]
 
-        outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); make.shared(list="+txlist+", group="+groups+", label=1)\"", [".shared"])
+        outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); make.shared(list="+txlist+", group="+input.groups+", label=1)\"", [".shared"])
         txshared = outputs[".shared"]
         os.system("cp "+txshared+" "+wildcards.project+".final.tax.shared")
 
-        outputs = sysio.get("mothur \"#set.logfile(name=master.logfile, append=T); sub.sample(shared="+txshared+", size="+str(int(lowest))+")\"", [])
+        outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); sub.sample(shared="+txshared+", size="+str(int(lowest))+")\"", [])
 
-        outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); classify.otu(list="+txlist+", name="+names+", taxonomy="+taxonomy+", label=1)\"", [".cons.taxonomy"])
+        outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); classify.otu(list="+txlist+", name="+input.names+", taxonomy="+input.taxonomy+", label=1)\"", [".cons.taxonomy"])
         txconsensus = outputs[".cons.taxonomy"]
         os.system("cp "+txshared+" "+wildcards.project+".final.tax.consensus")
 
@@ -423,14 +427,7 @@ rule finalize_sequences:
             if float(nums[i]) > float(highest):
                 highest = float(nums[i])
         lowest = highest
-        with open('run.json', 'r+') as f:
-            run = json.load(f)
-            run["storage"]["lowest"] = lowest
-            f.seek(0)
-            f.write(json.dumps(run))
-            f.truncate()
-        
-        #The following part finds the sample with the lowest number of sequences (which is consider the ideal lowest)
+                #The following part finds the sample with the lowest number of sequences (which is consider the ideal lowest)
         ideal_loc=""
         for i in range(0, len(nums)):
             if float(nums[i]) < lowest:
@@ -438,7 +435,13 @@ rule finalize_sequences:
                 ideal_loc = locs[i]
         print("")
         print("The lowest number of sequences will be set to " + str(lowest) + " from " + ideal_loc + ".")
-
+        with open('run.json', 'r+') as f:
+            run = json.load(f)
+            run["storage"]["lowest"] = str(lowest)
+            f.seek(0)
+            f.write(json.dumps(run))
+            f.truncate()
+        
         ### remove controls ###
 
         if arecontrols == "1": #THIS HAS NOT YET BEEN TESTED#######################
