@@ -283,7 +283,7 @@ else:
 
 print("")
 print("LAUNCHING SNAKEMAKE")
-os.system("caffeinate snakemake -j 3 --forceall")
+os.system("caffeinate snakemake -j 3")
 #os.system("snakemake --dryrun")		 
 #os.system("snakemake --dag | dot -Tpdf > dag.pdf")
 

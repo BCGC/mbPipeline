@@ -541,7 +541,7 @@ rule process_sequences:
         if int(nbasesafter)/int(nbases) <= 0.5 :
             print("Warning: Attempting to flip direction and re-allign sequences.")
             outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T);" +
-                                "align.seqs(fasta="+input.fasta+", reference="+silva+", flip=T, processors="+str(nprocessors)+")\"", [".fasta"])
+                                "align.seqs(fasta="+input.fasta+", reference="+silva+", flip=T, processors="+str(nprocessors)+")\"", [".align"])
             fastacheck = outputs[".align"]
             p = subprocess.Popen("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fastacheck+", name="+input.names+")\"", stdout=subprocess.PIPE, shell=True)
             out = p.communicate()[0]
@@ -561,7 +561,7 @@ rule process_sequences:
         outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fasta+", name="+input.names+")\"", [".summary"])
         summary = outputs[".summary"]
         summ = numpy.genfromtxt(summary, skiprows=1, dtype='str')
-        end = map(int, summ[:,2])
+        end = list(map(int, summ[:,2]))
 
         if numpy.percentile(end, 25) != numpy.percentile(end, 75):
             warnings.warn("Sequence endings are not consistent. Check to see if they have been flipped.", Warning)
