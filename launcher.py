@@ -264,6 +264,7 @@ if new:
 
 pipeline = ""
 with open('run.json') as data_file:
+	run = json.load(data_file)
 	pipeline = run["setup"]["pipeline"]
 
 if pipeline == "454":
@@ -273,7 +274,8 @@ if pipeline == "454":
 		import subprocess
 		sff = subprocess.Popen('find '+DATAPATH+' -name *.sff', shell = True, stdout=subprocess.PIPE).communicate()[0]
 		sff = sff.strip()
-		sff = sff.rsplit('\n')
+		sff = sff.decode("UTF-8")
+		sff = sff.rsplit("\n")
 		sff_file_names = [txt[:-4] for txt in sff]
 		print("SFF FILES:")
 		print(sff_file_names)
