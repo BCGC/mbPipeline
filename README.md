@@ -4,6 +4,7 @@ mbPipeline
 **Developed by:**
 Nikhil Gowda, Randall Johnson, Kira Vasquez, Dominique Brown
 
+==========
 mbPipeline is an automated workflow to process microbiome sequence data. Raw output files are generated for the users perusal, but the key feature of this pipeline is the automated graphics produced utilizing user specified metadata.
 
 To use this pipeline please clone it to your repository. You must have Python 3.X, Snakemake, and R installed. In order to generate graphics you must have the package mbGraphics (available at: www.github.com/BCGC/mbGraphics) installed on R. Numpy must be installed on python as well.
@@ -14,7 +15,7 @@ python /Users/gowdanb/Desktop/mbPipeline/Unified/launcher.py pipeline=454 metada
 ```
 
 
-
+==========
 **Arguments:**
 
 ```pipeline ```
@@ -60,13 +61,13 @@ miseq specific arguments:
 *pipeline still in development*
 
 
-
+==========
 **Metadata file format:**
 
 *documentation here*
 
 
-
+==========
 **Notes:**
 
 Feel free to open issues and submit possible fixes. For questions please contact Nikhil Gowda at nikhilbg96@gmail.com. Further documentation is still being provided.
