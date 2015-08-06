@@ -28,6 +28,9 @@ if not os.path.isfile(installed+"/ref/454/silva.bacteria.fasta"):
 	zip_ref = zipfile.ZipFile(installed+"/ref/454/silva.bacteria.fasta.zip", 'r')
 	zip_ref.extractall(installed+"/ref/454")
 	zip_ref.close()
+	zip_ref = zipfile.ZipFile(installed+"/ref/miseq/silva.bacteria.fasta.zip", 'r')
+	zip_ref.extractall(installed+"/ref/miseq")
+	zip_ref.close()
 	#INSERT OTHER MISEQ EXTRACTIONS HERE
 	print("")
 	print("Extraction complete")
