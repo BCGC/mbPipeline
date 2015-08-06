@@ -289,11 +289,11 @@ if pipeline == "454":
 		f.write(json.dumps(run))
 		f.truncate()
 elif pipeline == "miseq":
-        with open('run.json', 'r+') as f:
+	with open('run.json', 'r+') as f:
 		run = json.load(f)
 		DATAPATH = run["setup"]["datapath"]
 		import subprocess
-                fastq = subprocess.Popen('find '+DATAPATH+' -name *.fastq', shell = True, stdout=subprocess.PIPE).communicate()[0]
+		fastq = subprocess.Popen('find '+DATAPATH+' -name *.fastq', shell = True, stdout=subprocess.PIPE).communicate()[0]
 		fastq = fastq.strip()
 		fastq = fastq.rsplit('\n')
 		sff_file_names = [txt[:-4] for txt in sff]
