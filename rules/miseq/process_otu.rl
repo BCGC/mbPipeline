@@ -1,78 +1,99 @@
-rule miseq_process_otu:
+rule process_sequences:
     input:
-        fasta='{project}.final.fasta',
-        count='{project}.final.count',
-        taxonomy='{project}.final.taxonomy',
-        groups='{project}.final.groups'
+        fasta='{project}.preprocess.fasta',
+        names='{project}.preprocess.count'
     output:
-        '.temp.adiv',
-        '{project}.final.tax.shared',
-        '{project}.final.shared',
-        '{project}.final.tax.consensus',
-        '.temp.locs',
-        '.temp.nums'
+        '{project}.process.fasta',
+        '{project}.process.count'
     run:
         with open('run.json') as data_file:
             run = json.load(data_file)
-        nprocessors = run["setup"]["nprocessors"] #is there a better way of globally defining this earlier on?
-                
+        nprocessors = run["setup"]["nprocessors"]
+        silva = run["setup"]["miseq"]["silva"]
+
+            
+        
+# check how to at on on to silva
+#find way to find start and end for pcr and screen
+       
+        outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T);"+
+                            "pcr.seqs(fasta="+silva+", start=11894,end=25319, keepdots=F, processors=8)\"",[".fasta"])
+        silva= outputs[".fasta"]
+        outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T);" +
+                            "align.seqs(fasta="+input.fasta+", reference="+input.silva+", flip=F, processors="+str(nprocessors)+")\"", [".align"])
+
+        align= outputs[".align"]
+        p = subprocess.Popen("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+input.align+", count="+input.count+")\"", stdout=subprocess.PIPE, shell=True)
+        out = p.communicate()[0]
+        p.wait()
+        out = out[out.find("97.5%-tile:")+12:len(out)]
+        out = out[out.find("\t")+1:len(out)]
+        out = out[out.find("\t")+1:len(out)]
+        nbasesafter = out[0:out.find("\t")]
+
+        if int(nbasesafter)/int(nbases) <= 0.5 :
+            print("Warning: Attempting to flip direction and re-allign sequences.")
+            outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T);" +
+                                "align.seqs(fasta="+input.fasta+", reference="+silva+", flip=T, processors="+str(nprocessors)+")\"", [".fasta"])
+            align = outputs[".align"]
+            p = subprocess.Popen("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+input.align+", count="+input.count+")\"")#, stdout=subprocess.PIPE, shell=True)
+            out = p.communicate()[0]
+            p.wait()
+            out = out[out.find("97.5%-tile:")+12:len(out)]
+            out = out[out.find("\t")+1:len(out)]
+            out = out[out.find("\t")+1:len(out)]
+            nbasesafter = out[0:out.find("\t")]
+            if int(nbasesafter)/int(nbases) <= 0.5 :
+                raise Exception("Error in aligning sequences! nbases too low.")
+            print("Flipping was successful!")
+
+        fasta = align
+# screen the sequences so we only keep the stuff in the region we are interested in :)
+        # 0:seqname 1:start 2:end 3:nbases 4:ambigs 5:polymer 6:numSeqs
+        outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fasta+", count="+input.count+")\"", [".summary"])
+        summary = outputs[".summary"]
+        #summ = numpy.genfromtxt(summary, skiprows=1, dtype='str')
+        #end = map(int, summ[:,2])
+
+        #if numpy.percentile(end, 25) != numpy.percentile(end, 75):
+         #   warnings.warn("Sequence endings are not consistent. Check to see if they have been flipped.", Warning)
+       # end = str(int(numpy.percentile(end, 50)))
+
+        outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); screen.seqs(fasta="+input.align+", count="+input.count+", summary="+input.summary+", start=1968, end=11550, maxhomop=8)\"", [".align",".count",".summary"])
+
+        fasta = outputs[".align"]
+        count = outputs[".count"]
+        summary = outputs[".summary"]
         
 
-
-        ### OTUs ###
-        outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); dist.seqs(fasta="+input.fasta+", cutoff=0.20, processors="+str(nprocessors)+")\"", [".dist"])
-        dist = outputs[".dist"]
+        outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+input.align+", count="+input.count+")\"",[".summary",".align",".count"])
+        summary = outputs[".summary"]
+        fasta = outputs[".align"]
+        count = outputs[".count"]
         
 
-        outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); cluster(column="+input.dist+", count="+input.count+")\"", [".list"])
-        anlist = outputs[".list"]
+        # filter the sequences so they all overlap the same region
+        outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T);" +
+                            "filter.seqs(fasta="+input.align+", vertical=T, trump=., processors="+str(nprocessors)+")\"", [".fasta"])
 
-        outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); make.shared(list="+input.anlist+", count="+input.count+", label=0.03)\"", [".shared"])
-        shared = outputs[".shared"]
-        os.system("cp "+shared+" "+wildcards.project+".final.shared") #CHECK IF THIS IS THE APPOPRIATE WAY TO GET WILDCARD!!!
+        fasta = outputs[".fasta"]
+        print (fasta)
 
-        outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); classify.otu(list="+input.anlist+", count="+input.count+", taxonomy="+input.taxonomy+", label=0.03)\"", [])
+        # should get some more unique sequences
+        outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); unique.seqs(fasta="+input.fasta+", count="+input.count+")\"", [".fasta",".count"])
 
-        outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); phylotype(taxonomy="+input.taxonomy+", label=1)\"", [".tx.list"])
-        txlist = outputs[".tx.list"]
+        fasta = outputs[".fasta"]
+        fasta = outputs[".count"]
 
-        outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); make.shared(list="+input.txlist+", count="+input.count+", label=1)\"", [".shared"])
-        txshared = outputs[".shared"]
-        os.system("cp "+txshared+" "+wildcards.project+".final.tax.shared")
+       
 
-        outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); classify.otu(list="+input.txlist+", count="+input.count+", taxonomy="+input.taxonomy2+", label=1)\"", [".cons.taxonomy"])
-        txconsensus = outputs[".cons.taxonomy"]
-        os.system("cp "+txshared+" "+wildcards.project+".final.tax.consensus")
 
-        ### Alpha Diversity ###
+        # precluster to help get rid of sequencing errors - also helps with computational efficiency
+        outputs = sysio_set("mothur \"#set.logfile(name=master.logfile, append=T); pre.cluster(fasta="+input.fasta+", count="+input.count+", diffs=2)\"", [".fasta",".count"], wildcards.project+".process")
 
-        os.system("mothur \"#set.logfile(name=master.logfile, append=T); collect.single(shared="+shared+", calc=chao-invsimpson, freq=100)\"")
+    
 
-        sample_list = []
-        os.system("grep -l '0.03' *.invsimpson > .sample_list.out")
-        num_lines3 = sum(1 for line in open('.sample_list.out'))
-        f = open('.sample_list.out')
-        for i in range(0, num_lines3):
-            sample_list.append(f.readline())
-            sample_list[i] = sample_list[i][:-1]
-        f.close()
-        temp1 = []
-        summ = 0
-        invsimpson = []
-        for i in range(0, num_lines3):
-            os.system("cut -f2 -s "+sample_list[i]+" | tail -n 5 > .temp_nums.out")
-            num_lines4 = sum(1 for line in open('.temp_nums.out'))
-            f = open('.temp_nums.out')
-            for j in range(0, num_lines4):
-                temp1.append(f.readline())
-            for z in range(0, num_lines4):
-                summ += float(temp1[z])
-            temp1 = []
-            invsimpson.append(summ/num_lines4)
-            summ = 0
-            f.close()
-        f = open('.temp.adiv', 'w')
-        for i in range(0, len(invsimpson)):
-            f.write(str(invsimpson[i]) + ' \n')
-        f.close()
-        
+
+
+    
+
