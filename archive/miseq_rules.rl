@@ -1,16 +1,15 @@
 rule miseq_process_otu:
-     input:
+    input:
         fasta='{project}.final.fasta',
         count='{project}.final.count',
         taxonomy='{project}.final.taxonomy',
         groups='{project}.final.groups'
     output:
-        '.temp.adiv',
+        '{project}.temp.adiv',
         '{project}.final.tax.shared',
         '{project}.final.shared',
         '{project}.final.tax.consensus',
-        '.temp.locs',
-        '.temp.nums'
+                    
     run:
         with open('run.json') as data_file:
             run = json.load(data_file)
@@ -86,23 +85,19 @@ rule miseq_finalize_sequences:
         '{project}.final.fasta',
         '{project}.final.count',
         '{project}.final.taxonomy',
-        '.temp.locs',
-        '.temp.nums'
+        '{project}.temp.locs',
+        '{project}.temp.nums'
     run:
         # final files
         os.system("cp "+input.fasta+" "+wildcards.project+".final.fasta")
-        fasta = wildcards.project+'final.fasta'
-        os.system("cp "+input.count+" "+wildcards.project+".final.count")
-        count = wildcards.project+'final.count'
-        os.system("cp "+input.taxonomy+" "+wildcards.project+"final.taxonomy")
-        taxonomy = wildcards.project+'final.taxonomy'
-        run = json.load(data_file)
-            seqerror_reference = run["setup"]["miseq"]["seqerror_reference"]
+        with open('run.json') as data_file:
+            run = json.load(data_file)
+        seqerror_reference = run["setup"]["miseq"]["seqerror_reference"]
             
         ### get sequence data ###
 
         os.system("rm .seq_data.out") #in case a prior file by this name existed
-        os.system("mothur \"#set.logfile(name=master.logfile, append=T);count.groups(count="+input.count+")\" > .seq_data.out")
+        os.system("mothur \"#set.logfile(name=master.logfile, append=T); count.groups(count="+input.count+")\" > .seq_data.out")
 
         ### pull apart data in x.seq_data.out ###
 
@@ -124,7 +119,7 @@ rule miseq_finalize_sequences:
             nums.append(temp2)
 
         ### print warnings, find optimal sequence size and save ctrl seqs to file ###
-         with open('run.json') as data_file:
+        with open('run.json') as data_file:
             run = json.load(data_file)
         arecontrols = run["setup"]["arecontrols"]
 
@@ -142,9 +137,9 @@ rule miseq_finalize_sequences:
             ctrl_locs = []
             for i in range(0, len(ctrls)):
                   for j in range(0, len(locs)-1):
-                    if ctrls[i] == locs[j]:
-                     ctrl_locs.append(locs.pop(j))
-                     ctrl_nums.append(nums.pop(j))
+                      if ctrls[i] == locs[j]:
+                        ctrl_locs.append(locs.pop(j))
+                        ctrl_nums.append(nums.pop(j))
             for i in range(0, len(ctrl_nums)):
                   if float(ctrl_nums[i]) > 1000:
                      ctrl_warn.append(ctrl_locs[i])
@@ -154,8 +149,8 @@ rule miseq_finalize_sequences:
                   f.write(ctrls[i] + ": " + ctrl_nums[i] + " \n")
             f.close()
 
-            print ""
-            print "Warning: the following control samples have an unusually high number of sequences: " + str(ctrl_warn)
+            print ("")
+            print ("Warning: the following control samples have an unusually high number of sequences: " + str(ctrl_warn))
         f = open('.temp.numseqs', 'w')
         for i in range(0, len(nums)):
             f.write(str(nums[i]) + " \n")
@@ -171,17 +166,17 @@ rule miseq_finalize_sequences:
         for i in range(0, len(nums)):
             if float(nums[i]) < 3000:
                    low_warn.append(locs[i])
-        print ""
-        print "Warning: the following samples have an unusually low number of sequences, they will be thrown out: " + str(low_warn)
+        print ("")
+        print ("Warning: the following samples have an unusually low number of sequences, they will be thrown out: " + str(low_warn))
 
         low_seq_nums = []
         for i in range(0, len(low_warn)):
             for j in range(0, len(nums)-1):
                 if locs[j] == low_warn[i]:
                      low_seq_nums.append(nums[j])
-        print ""
+        print ("")
         for i in range(0, len(low_warn)):
-            print low_warn[i] + " has " + low_seq_nums[i] + " sequences." #Prints those samples and their # of seqs
+            print (""+low_warn[i] + " has " + low_seq_nums[i] + " sequences.") #Prints those samples and their # of seqs
 
         #Following loop removes those found low sequences names and numbers from the orig lists
         for i in range(0, len(low_warn)):
@@ -196,31 +191,29 @@ rule miseq_finalize_sequences:
         lowest = highest
         with open('run.json', 'r+') as f:
             run = json.load(f)
-            run["storage"]["lowest"] = lowest
-            f.seek(0)
-            f.write(json.dumps(run))
-            f.truncate()
+        run["storage"]["lowest"] = lowest
+        f.seek(0)
+        f.write(json.dumps(run))
+        f.truncate()
         
         #The following part finds the sample with the lowest number of sequences (which is consider the ideal lowest)
         for i in range(0, len(nums)):
             if float(nums[i]) < lowest:
-                lowest = float(nums[i])
-                ideal_loc = locs[i]
-        print ""
+               lowest = float(nums[i])
+               ideal_loc = locs[i]
+        print("")
         print("The lowest number of sequences will be set to " + str(lowest) + " from " + ideal_loc + ".")
 
         ### remove controls ###
 
         if arecontrols == "1": #THIS HAS NOT YET BEEN TESTED#######################
-            sysio_set("mothur \"#set.logfile(name=master.logfile, append=T);" +
-                      "remove.groups(fasta="+inputfasta+", accnos="+controlsfile+", count="+input.count+
-                      ", taxonomy="+taxonomy+")\"")
-
-            for i in range(0, len(ctrls)):
-                for j in range(0, len(nums)-1):
-                    if locs[j] == ctrls[i]:
-                        locs.pop(j)
-                        nums.pop(j)
+            sysio_set("mothur \"#set.logfile(name=master.logfile, append=T); remove.groups(fasta="+inputfasta+", accnos="+controlsfile+", count="+input.count+", taxonomy="+taxonomy+")\"")
+                
+        for i in range(0, len(ctrls)):
+            for j in range(0, len(nums)-1):
+                if locs[j] == ctrls[i]:
+                    locs.pop(j)
+                    nums.pop(j)
 
         f = open('.temp.locs', 'w')
         for i in range(0, len(locs)):
@@ -244,8 +237,8 @@ rule miseq_finalize_sequences:
 
 
         #can use R to get actual error rates
-        #s <- read.table(file="stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.error.summary", header=T)
-        #ct <- read.table(file="stability.trim.contigs.good.unique.good.filter.unique.precluster.uchime.pick.pick.pick.count_table", header=T)
+        s <- read.table(file="stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.error.summary", header=T)
+        ct <- read.table(file="stability.trim.contigs.good.unique.good.filter.unique.precluster.uchime.pick.pick.pick.count_table", header=T)
         outputs=sysio_get("Rscript seqerror.R  "+input.summary+"  "+input.count+"") 
         #/Users/browndd/Desktop/MiseqPipeline
         #This string of commands will produce a file for you
@@ -258,7 +251,7 @@ rule miseq_finalize_sequences:
         shared=outputs[".shared"]
         outputs=sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); rarefaction.single(shared="+input.shared+")\"")
 
-        #os.system("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta = "+shared+")\"") # need fixed
+        os.system("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta = "+shared+")\"") # need fixed
 
 
 
@@ -275,11 +268,10 @@ rule remove_miseq:
     input:
         fasta ='{project}.process.fasta',
         count ='{project}.process.fasta'
-        
     output:
-        '{project}.remove.fasta',
-        '{project}.remove.count',
-        '{project}.remove.taxonomy'
+        "{project}.remove.fasta",
+        "{project}.remove.count",
+        "{project}.remove.taxonomy"
     run:
         with open('run.json') as data_file:
             run = json.load(data_file)
@@ -298,25 +290,21 @@ rule remove_miseq:
         fasta = ""
         if tmp.shape[0] > 0:
             outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T);" +
-                                "remove.seqs(accnos="+accnos+", fasta="+fasta+")\"", [".fasta"])
+                                "remove.seqs(accnos="+input.accnos+", fasta="+input.fasta+")\"", [".fasta"])
             fasta = outputs[".fasta"]
         else:
             raise Exception("All sequences flagged as chimeras!")
 
 
         # classify sequences using given taxonomy trainset
-        #os.system()
-        outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T);" +
-                            "classify.seqs(fasta="+input.fasta+", count="+input.count+",
-                             reference="+trainset+", taxonomy="+taxonomy+".tax, cutoff=80, processors="+str(nprocessors)+")\"", [".taxonomy"])
+        os.system()
+        outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); classify.seqs(fasta="+input.fasta+", count="+input.count+", reference="+trainset+", taxonomy="+input.taxonomy+", cutoff=80, processors="+str(nprocessors)+")\"", [".taxonomy"])
 
 
         taxonomy2 = outputs[".taxonomy"]
 
         # remove contaminant mitochondria/chloroplast sequences
-        sysio_set("mothur \"#set.logfile(name=master.logfile, append=T);" + 
-                "remove.lineage(fasta="+input.fasta+", count="+input.count+", taxonomy="+input.taxonomy2+",
-                     taxon=Chloroplast-Mitochondria-unknown-Archaea-Eukaryota)\"", [".taxonomy",".count",",fasta"], wildcards.project+".remove")
+        sysio_set("mothur \"#set.logfile(name=master.logfile, append=T); remove.lineage(fasta="+input.fasta+", count="+input.count+", taxonomy="+input.taxonomy2+", taxon=Chloroplast-Mitochondria-unknown-Archaea-Eukaryota)\"", [".taxonomy",".count",",fasta"], wildcards.project+".remove")
         
         
 
@@ -329,7 +317,6 @@ rule process_sequences:
     output:
         '{project}.process.fasta',
         '{project}.process.count'
-        
     run:
         with open('run.json') as data_file:
             run = json.load(data_file)
@@ -377,22 +364,21 @@ rule process_sequences:
         # 0:seqname 1:start 2:end 3:nbases 4:ambigs 5:polymer 6:numSeqs
         outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fasta+", count="+input.count+")\"", [".summary"])
         summary = outputs[".summary"]
-        summ = numpy.genfromtxt(summary, skiprows=1, dtype='str')
-        end = map(int, summ[:,2])
+        #summ = numpy.genfromtxt(summary, skiprows=1, dtype='str')
+        #end = map(int, summ[:,2])
 
-        if numpy.percentile(end, 25) != numpy.percentile(end, 75):
-            warnings.warn("Sequence endings are not consistent. Check to see if they have been flipped.", Warning)
-        end = str(int(numpy.percentile(end, 50)))
+        #if numpy.percentile(end, 25) != numpy.percentile(end, 75):
+         #   warnings.warn("Sequence endings are not consistent. Check to see if they have been flipped.", Warning)
+       # end = str(int(numpy.percentile(end, 50)))
 
-        outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T);" + 
-                            " screen.seqs(fasta="+input.align+", count="+input.count+", summary="+input.summary+", start=1968, end=11550, maxhomop=8)\", [".align",".count",".summary"]")
+        outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); screen.seqs(fasta="+input.align+", count="+input.count+", summary="+input.summary+", start=1968, end=11550, maxhomop=8)\"", [".align",".count",".summary"])
 
         fasta = outputs[".align"]
         count = outputs[".count"]
         summary = outputs[".summary"]
         
 
-        outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+input.align+", count="+input.count+")\",[".summary",".align",".count"]")
+        outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+input.align+", count="+input.count+")\"",[".summary",".align",".count"])
         summary = outputs[".summary"]
         fasta = outputs[".align"]
         count = outputs[".count"]
@@ -403,20 +389,19 @@ rule process_sequences:
                             "filter.seqs(fasta="+input.align+", vertical=T, trump=., processors="+str(nprocessors)+")\"", [".fasta"])
 
         fasta = outputs[".fasta"]
-        print fasta
+        print (fasta)
 
         # should get some more unique sequences
         outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); unique.seqs(fasta="+input.fasta+", count="+input.count+")\"", [".fasta",".count"])
 
         fasta = outputs[".fasta"]
         fasta = outputs[".count"]
-        print fasta
+
        
 
 
         # precluster to help get rid of sequencing errors - also helps with computational efficiency
-        sysio_set("mothur \"#set.logfile(name=master.logfile, append=T);" +
-                  "pre.cluster(fasta="+input.fasta+", count="+input.count+", diffs=2)\"", [".fasta",".count"], wildcards.project+".process")
+        outputs = sysio_set("mothur \"#set.logfile(name=master.logfile, append=T); pre.cluster(fasta="+input.fasta+", count="+input.count+", diffs=2)\"", [".fasta",".count"], wildcards.project+".process")
 
     
 
@@ -434,38 +419,39 @@ rule process_sequences:
 #########################
 rule unique_sequences:
     input:
-         fasta = '{project}.screen.fasta'
-         fasta = '{project}.screen.groups'
+        fasta = '{project}.screen.fasta',
+        groups = '{project}.screen.groups'
 
     output:
         '{project}.preprocess.fasta',
         '{project}.preprocess.count'
     run:
         outputs = sysio_set("mothur \"#set.logfile(name=master.logfile, append=T); unique.seqs(fasta="+input.fasta+")\""[".fasta, .names"], wildcards.project+".preprocess")
-fasta = outputs['.fasta']
-names = outputs['.names']
+        fasta = outputs['.fasta']
+        names = outputs['.names']
 
-outputs = sysio.set("mothur \"#set.logfile(name=master.logfile, append=T); count.seqs(name="+input.names+", group="+input.groups+")\""[".count"], wildcards.project+".preprocess") 
+        outputs = sysio.set("mothur \"#set.logfile(name=master.logfile, append=T); count.seqs(name="+input.names+", group="+input.groups+")\""[".count"], wildcards.project+".preprocess") 
                 
 ##########################
 rule screen_sequences:
-                
     input: 
-        fasta='{project}.fasta' 
-        groups='{project}.groups'
+        fasta='{project}.load.fasta', 
+        groups='{project}.load.groups'
     output:
         '{project}.screen.fasta'
         '{project}.screen.groups'
     run:
-      outputs = sysio_set("mothur \"#set.logfile(name=master.logfile, append=T); screen.seqs(fasta="+input.fasta+", group="+input.groups+", maxambig=0, maxlength=275)\""[".fasta",".group"], wildcards.project+".screen")  
+         outputs = sysio_set("mothur \"#set.logfile(name=master.logfile, append=T); screen.seqs(fasta="+input.fasta+", group="+input.groups+", maxambig=0, maxlength=275)\""[".fasta",".group"], wildcards.project+".screen")  
 
 #####################
 
 rule load_miseq:
-    output: '{project}.fasta', '{project}.groups'
+    input: sff=expand('{filename}.sff', filename = SFF_FILE_NAMES)#last error in dryrun not defined
+    output: '{project}.load.fasta', '{project}.load.groups'
     run:
         with open('run.json') as data_file:
             run = json.load(data_file)
         nprocessors= run["setup"]["nprocessors"]
         maxlength= run["setup"]["miseq"]["files"]
-      outputs = sysio.set("mothur \"#set.logfile(name=master.logfile, append=T);"  "make.contigs(file="+files+", processors="+str(nprocessors)+")\""[".fasta",".groups"], wildcards.project+)
+        outputs = sysio.set("mothur \"#set.logfile(name=master.logfile, append=T); make.contigs(file="+input.files+", processors="+str(nprocessors)+")\""[".fasta",".groups"], wildcards.project+".load.")
+
