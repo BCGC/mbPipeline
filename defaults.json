@@ -3,7 +3,6 @@
 	"setup": {
 		"pipeline": "",
 		"sff":[],
-		"fastq":[],
 		"metadata": "",
 		"arecontrols": "0",
 		"controlsfile": "",
