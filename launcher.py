@@ -262,22 +262,32 @@ if new:
 		f.write(json.dumps(run))
 		f.truncate()
 
-with open('run.json', 'r+') as f:
-	run = json.load(f)
-	DATAPATH = run["setup"]["datapath"]
-	import subprocess
-	sff = subprocess.Popen('find '+DATAPATH+' -name *.sff', shell = True, stdout=subprocess.PIPE).communicate()[0]
-	sff = sff.strip()
-	sff = sff.rsplit('\n')
-	sff_file_names = [txt[:-4] for txt in sff]
-	print("SFF FILES:")
-	print(sff_file_names)
+pipeline = ""
+with open('run.json') as data_file:
+	pipeline = run["setup"]["pipeline"]
 
-	run["setup"]["sff"] = sff_file_names
+if pipeline == "454":
+	with open('run.json', 'r+') as f:
+		run = json.load(f)
+		DATAPATH = run["setup"]["datapath"]
+		import subprocess
+		sff = subprocess.Popen('find '+DATAPATH+' -name *.sff', shell = True, stdout=subprocess.PIPE).communicate()[0]
+		sff = sff.strip()
+		sff = sff.rsplit('\n')
+		sff_file_names = [txt[:-4] for txt in sff]
+		print("SFF FILES:")
+		print(sff_file_names)
 
-	f.seek(0)
-	f.write(json.dumps(run))
-	f.truncate()
+		run["setup"]["sff"] = sff_file_names
+
+		f.seek(0)
+		f.write(json.dumps(run))
+		f.truncate()
+elif pipeline == "miseq":
+	raise Exception("NOT YET SUPPORTED")
+	#miseq data setup goes here
+else:
+	raise Exception "ERROR: PIPELINE SPECIFICATION IN RUN.JSON IS INCORRECT. PLEASE CHECK."
 
 nprocessors = "1"				
 with open('run.json') as data_file:
