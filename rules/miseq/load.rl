@@ -5,5 +5,5 @@ rule load_miseq:
             run = json.load(data_file)
         nprocessors= run["setup"]["nprocessors"]
         maxlength= run["setup"]["miseq"]["files"]
-      outputs = sysio.set("mothur \"#set.logfile(name=master.logfile, append=T);"  "make.contigs(file="+files+", processors="+str(nprocessors)+")\""[".fasta",".groups"], wildcards.project+)
+      outputs = sysio.set("mothur \"#set.logfile(name=master.logfile, append=T);"  "make.contigs(file=stability.files, processors="+str(nprocessors)+")\""[".fasta",".groups"], wildcards.project+)
   

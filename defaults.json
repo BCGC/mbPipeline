@@ -2,7 +2,8 @@
 	"version": "1.0",
 	"setup": {
 		"pipeline": "",
-		"sff": [],
+		"sff":[],
+		"fastq":[],
 		"metadata": "",
 		"arecontrols": "0",
 		"controlsfile": "",
