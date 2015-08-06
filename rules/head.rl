@@ -11,9 +11,8 @@ from io import StringIO
 with open('run.json') as data_file:
     run = json.load(data_file)
 PROJECT = run["setup"]["proj"]
-SFF_FILE_NAMES = run["setup"]["sff"]
-#SFF_FILE_NAMES = ["one", "two"]
-#PROJECT='test'
+DATA_FILE_NAMES = run["setup"]["data"]
+
 def sysio_set(cmd, extensions, newprefix):
     out=""
     with subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True, bufsize=1, universal_newlines=True) as p, StringIO() as buf:

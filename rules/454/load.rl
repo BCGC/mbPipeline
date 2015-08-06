@@ -1,5 +1,5 @@
 rule load:
-    input: sff=expand('{filename}.sff', filename = SFF_FILE_NAMES)
+    input: sff=expand('{filename}.sff', filename = DATA_FILE_NAMES)
     output: '{project}.load.fasta', '{project}.load.names'
     run:
         with open('run.json') as data_file:

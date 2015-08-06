@@ -283,7 +283,7 @@ if pipeline == "454":
 		print("SFF FILES:")
 		print(sff_file_names)
 
-		run["setup"]["sff"] = sff_file_names
+		run["setup"]["data"] = sff_file_names
 
 		f.seek(0)
 		f.write(json.dumps(run))
@@ -300,7 +300,7 @@ elif pipeline == "miseq":
 		print("FASTQ FILES:")
 		print(fastq_file_names)
 
-		run["setup"]["fastq"] = fastq
+		run["setup"]["data"] = fastq
 
 		f.seek(0)
 		f.write(json.dumps(run))
