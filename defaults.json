@@ -24,7 +24,7 @@
 		"miseq": {
 			"rules": ["head", "all", "graph", "data_setup", "beta_data", "miseq/process_otu", 
 				  "miseq/finalize_sequences", "miseq/remove_sequences", "miseq/process_sequences",
-				  "miseq/unique_sequnces", "miseq/screen_sequences", "miseq/load"],
+				  "miseq/unique_sequences", "miseq/screen_sequences", "miseq/load"],
 			"trainset": "trainset9_032012.pds",
 			"seqerror_reference": "HMP_MOCK.v35.fasta"
 		}

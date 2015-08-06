@@ -60,15 +60,14 @@ rule miseq_process_sequences:
             warnings.warn("Sequence endings are not consistent. Check to see if they have been flipped.", Warning)
         end = str(int(numpy.percentile(end, 50)))
 
-        outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T);" + 
-                            " screen.seqs(fasta="+input.align+", count="+input.count+", summary="+input.summary+", start=1968, end=11550, maxhomop=8)\", [".align",".count",".summary"]")
+        outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); screen.seqs(fasta="+input.align+", count="+input.count+", summary="+input.summary+", start=1968, end=11550, maxhomop=8)\"", [".align",".count",".summary"])
 
         fasta = outputs[".align"]
         count = outputs[".count"]
         summary = outputs[".summary"]
         
 
-        outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+input.align+", count="+input.count+")\",[".summary",".align",".count"]")
+        outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+input.align+", count="+input.count+")\"",[".summary",".align",".count"])
         summary = outputs[".summary"]
         fasta = outputs[".align"]
         count = outputs[".count"]
@@ -79,7 +78,9 @@ rule miseq_process_sequences:
                             "filter.seqs(fasta="+input.align+", vertical=T, trump=., processors="+str(nprocessors)+")\"", [".fasta"])
 
         fasta = outputs[".fasta"]
-        print fasta
+        print(fasta)
+
+
 
         # should get some more unique sequences
         outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T); unique.seqs(fasta="+input.fasta+", count="+input.count+")\"", [".fasta",".count"])

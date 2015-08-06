@@ -35,15 +35,13 @@ rule remove_miseq:
         # classify sequences using given taxonomy trainset
         #os.system()
         outputs = sysio_get("mothur \"#set.logfile(name=master.logfile, append=T);" +
-                            "classify.seqs(fasta="+input.fasta+", count="+input.count+",
-                             reference="+trainset+", taxonomy="+taxonomy+".tax, cutoff=80, processors="+str(nprocessors)+")\"", [".taxonomy"])
+                            "classify.seqs(fasta="+input.fasta+", count="+input.count+", reference="+trainset+", taxonomy="+taxonomy+".tax, cutoff=80, processors="+str(nprocessors)+")\"", [".taxonomy"])
 
 
         taxonomy2 = outputs[".taxonomy"]
 
         # remove contaminant mitochondria/chloroplast sequences
         sysio_set("mothur \"#set.logfile(name=master.logfile, append=T);" + 
-                "remove.lineage(fasta="+input.fasta+", count="+input.count+", taxonomy="+input.taxonomy2+",
-                     taxon=Chloroplast-Mitochondria-unknown-Archaea-Eukaryota)\"", [".taxonomy",".count",",fasta"], wildcards.project+".remove")
+                "remove.lineage(fasta="+input.fasta+", count="+input.count+", taxonomy="+input.taxonomy2+", taxon=Chloroplast-Mitochondria-unknown-Archaea-Eukaryota)\"", [".taxonomy",".count",",fasta"], wildcards.project+".remove")
         
 

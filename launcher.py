@@ -78,7 +78,7 @@ if new:
 		if (pipeline != '454') & (pipeline != 'miseq'):
 			raise Exception("Proper pipeline name not specified!")
 
-		try:
+                try:
 			metadata = args['metadata']
 			run["setup"]["metadata"] = metadata
 		except KeyError:
@@ -108,14 +108,14 @@ if new:
 				os.system("ln -fs " + full_file_name + " .")
 
 		if os.path.isdir(REFPATH):
-			if not os.path.isfile(REFPATH +"/oligos.txt"):
-				raise Exception("Oligos file not in reference directory! Must be named oligos.txt!")
+			#if not os.path.isfile(REFPATH +"/oligos.txt"):
+			#	raise Exception("Oligos file not in reference directory! Must be named oligos.txt!")
 			os.system("ln -fs " + REFPATH + "/oligos.txt .")
 			os.system("ln -fs " + REFPATH + "/trainset* .")
 			os.system("ln -fs " + REFPATH + "/LookUp_Titanium.pat .")
 			os.system("ln -fs " + REFPATH + "/silva.* .")
-			if not os.path.isfile(REFPATH + "/" + metadata + ""):
-				raise Exception("Matadata file not in reference directory!")
+		#	if not os.path.isfile(REFPATH + "/" + metadata + ""):
+			#	raise Exception("Matadata file not in reference directory!")
 			os.system("ln -fs " + REFPATH + "/" + metadata + " .")
 			if run["setup"]["arecontrols"] == "1":
 				if not os.path.isfile(REFPATH + "/" + controlsfile + ""):
@@ -164,62 +164,9 @@ if new:
 			except KeyError:
 				print("Using default bdiffs")
 		if pipeline == "miseq":
-			try:
-				maxambig = args['maxambig']
-				run["setup"][pipeline]["maxambig"] = maxambig
-			except KeyError:
-				print("Using default maxambig.")  
 
 			try:
-				maxlength = args['maxlength']
-				run["setup"][pipeline]["maxlength"] = maxlength
-			except KeyError:
-				print("Using default maxlength.")
-
-			try:
-				pcr_start = args['pcr_start']
-				run["setup"][pipeline]["pcr_start"] = pcr_start
-			except KeyError:
-				print("Using default pcr_start.")
-
-			try:
-				pcr_end = args['pcr_end']
-				run["setup"][pipeline]["pcr_end"] = pcr_end
-			except KeyError:
-				print("Using default pcr_end.")
-
-			try:
-				screen_start = args['screen_start']
-				run["setup"][pipeline]["screen_start"] = screen_start
-			except KeyError:
-				print("Using default screen_start.")
-
-			try:
-				screen_end = args['screen_end']
-				run["setup"][pipeline]["screen_end"] = screen_end
-			except KeyError:
-				print("Using default screen_end.")
-
-			try:
-				maxhomop = args['maxhomop']
-				run["setup"][pipeline]["maxhomop"] = maxhomop
-			except KeyError:
-				print("Using default maxhomop.")    
-
-			try:
-				taxon = args['taxon']
-				run["setup"][pipeline]["taxon"] = taxon
-			except KeyError:
-				print("Using default taxon.")
-
-			try:
-				groups1 = args['groups1']
-				run["setup"][pipeline]["group1"] = group1
-			except KeyError:
-				print("Using default group1.")
-
-			try:
-				seq_reference = args['seq_reference']
+				seqerror_reference = args['seq_reference']
 				run["setup"][pipeline]["seq_reference"] = seq_reference
 			except KeyError: 
 				print("Using default seq_reference.")
@@ -296,7 +243,7 @@ elif pipeline == "miseq":
 		fastq = subprocess.Popen('find '+DATAPATH+' -name *.fastq', shell = True, stdout=subprocess.PIPE).communicate()[0]
 		fastq = fastq.strip()
 		fastq = fastq.rsplit('\n')
-		sff_file_names = [txt[:-4] for txt in sff]
+		fastq_file_names = [txt[:-4] for txt in fastq]
 		print("FASTQ FILES:")
 		print(fastq_file_names)
 
@@ -306,10 +253,10 @@ elif pipeline == "miseq":
 		f.write(json.dumps(run))
 		f.truncate()
 
-	raise Exception("NOT YET SUPPORTED")
+#	raise Exception("NOT YET SUPPORTED")
 	#miseq data setup goes here
-else:
-	raise Exception("ERROR: PIPELINE SPECIFICATION IN RUN.JSON IS INCORRECT. PLEASE CHECK.")
+#else:
+#	raise Exception("ERROR: PIPELINE SPECIFICATION IN RUN.JSON IS INCORRECT. PLEASE CHECK.")
 
 nprocessors = "1"				
 with open('run.json') as data_file:
