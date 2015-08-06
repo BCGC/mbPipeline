@@ -57,13 +57,13 @@ Other arguments (will be defaulted to value in defaults.json if not specified) :
 
 miseq specific arguments:
 
-**pipeline still in development**
+*pipeline still in development*
 
 
 
 **Metadata file format:**
 
-**documentation here**
+*documentation here*
 
 
 
