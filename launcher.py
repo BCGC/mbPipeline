@@ -287,7 +287,7 @@ elif pipeline == "miseq":
 	raise Exception("NOT YET SUPPORTED")
 	#miseq data setup goes here
 else:
-	raise Exception "ERROR: PIPELINE SPECIFICATION IN RUN.JSON IS INCORRECT. PLEASE CHECK."
+	raise Exception("ERROR: PIPELINE SPECIFICATION IN RUN.JSON IS INCORRECT. PLEASE CHECK.")
 
 nprocessors = "1"				
 with open('run.json') as data_file:
