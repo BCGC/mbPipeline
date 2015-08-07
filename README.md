@@ -64,8 +64,16 @@ miseq specific arguments:
 ==========
 **Metadata file format:**
 
-The metadata file is a tab delimited file that is provided by the user. In the future if the metadata file is not provided the pipeline will generate basic graphics using just sample name. For now, if you do not want to use a metadata file please provide a blank metadata file; the pipeline will break at the relevant graphing rules but all raw outputs will still have been generated. 
-The metadata file should be formatted like this:
+The metadata file is a tab delimited file that is provided by the user that describes each sample. In the future if the metadata file is not provided the pipeline will generate basic graphics using just sample name. For now, if you do not want to use a metadata file please provide a blank metadata file; the pipeline will break at the relevant graphing rules but all raw outputs will still have been generated. 
+The metadata text file should be formatted like this:
+
+| meta | meta | cat | cont | cat |
+| :--- | :--- | :-- | :--- | :-- |
+| **barcode** | **date** | **race** | **age** | **gender** |
+| **ABC11** | **01212013** | **eu** | **54** | **m** |
+|**ABC12** | **01212013** | **af** | **43** | **f** |
+
+Please remember that this is all tab delimited. any column with the header as meta will be regarded as metadata and will not be used in graphing. Any column with the header as cat will be regarded as a categorical var for graphing, and cont will be regarded as a continuious var (example: age is continuous whereas gender is categorical). *The exact barcode for each sample must be provided under a meta column so that the pipeline will be able to properly match up output data to the appropriate row.
 
 
 ==========
