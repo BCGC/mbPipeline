@@ -80,3 +80,6 @@ Please remember that this is all tab delimited. any column with the header as me
 **Notes:**
 
 Feel free to open issues and submit possible fixes. For questions please contact Nikhil Gowda at nikhilbg96@gmail.com. Further documentation is still being provided.
+
+License information is provided in LICENSE.md
+
