@@ -69,7 +69,7 @@ else:
 if new:
 	with open('run.json', 'r+') as f:
 		run = json.load(f)
-		
+		pipeline = ""
 		try:
 			pipeline = args['pipeline']
 			run["setup"]["pipeline"] = pipeline
@@ -108,14 +108,14 @@ if new:
 				os.system("ln -fs " + full_file_name + " .")
 
 		if os.path.isdir(REFPATH):
-			#if not os.path.isfile(REFPATH +"/oligos.txt"):
-			#	raise Exception("Oligos file not in reference directory! Must be named oligos.txt!")
+			if (pipeline==454) and (not os.path.isfile(REFPATH +"/oligos.txt")):
+				raise Exception("Oligos file not in reference directory! Must be named oligos.txt!")
 			os.system("ln -fs " + REFPATH + "/oligos.txt .")
 			os.system("ln -fs " + REFPATH + "/trainset* .")
 			os.system("ln -fs " + REFPATH + "/LookUp_Titanium.pat .")
 			os.system("ln -fs " + REFPATH + "/silva.* .")
-		#	if not os.path.isfile(REFPATH + "/" + metadata + ""):
-			#	raise Exception("Matadata file not in reference directory!")
+			if not os.path.isfile(REFPATH + "/" + metadata + ""):
+				raise Exception("Matadata file not in reference directory!")
 			os.system("ln -fs " + REFPATH + "/" + metadata + " .")
 			if run["setup"]["arecontrols"] == "1":
 				if not os.path.isfile(REFPATH + "/" + controlsfile + ""):
@@ -167,7 +167,7 @@ if new:
 
 			try:
 				seqerror_reference = args['seq_reference']
-				run["setup"][pipeline]["seq_reference"] = seq_reference
+				run["setup"][pipeline]["seq_reference"] = seqerror_reference
 			except KeyError: 
 				print("Using default seq_reference.")
 
@@ -253,10 +253,10 @@ elif pipeline == "miseq":
 		f.write(json.dumps(run))
 		f.truncate()
 
-#	raise Exception("NOT YET SUPPORTED")
+	raise Exception("NOT YET SUPPORTED")
 	#miseq data setup goes here
-#else:
-#	raise Exception("ERROR: PIPELINE SPECIFICATION IN RUN.JSON IS INCORRECT. PLEASE CHECK.")
+else:
+	raise Exception("ERROR: PIPELINE SPECIFICATION IN RUN.JSON IS INCORRECT. PLEASE CHECK.")
 
 nprocessors = "1"				
 with open('run.json') as data_file:
