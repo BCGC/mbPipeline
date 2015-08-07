@@ -78,7 +78,7 @@ if new:
 		if (pipeline != '454') & (pipeline != 'miseq'):
 			raise Exception("Proper pipeline name not specified!")
 
-                try:
+		try:
 			metadata = args['metadata']
 			run["setup"]["metadata"] = metadata
 		except KeyError:
