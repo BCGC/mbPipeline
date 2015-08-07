@@ -1,0 +1,37 @@
+{
+	"version": "1.0",
+	"setup": {
+		"pipeline": "",
+		"data":[],
+		"metadata": "",
+		"arecontrols": "0",
+		"controlsfile": "",
+		"datapath": "",
+		"proj": "",
+		"indvars": [],
+		"min_stack_proportion": "0.14",
+		"nprocessors": "1",
+		"classify_cutoff": "80",
+		"dist_cutoff": ".20",
+		"silva": "silva.bacteria.fasta",
+		"454": {
+			"rules": ["head", "all", "graph", "data_setup", "beta_data", "454/process_otu", "454/finalize_sequences",
+				  "454/remove_sequences", "454/process_sequences", "454/unique_sequences", "454/trim_sequences", "454/load"],
+			"trainset": "trainset9_032012.pds",
+			"pdiffs": "2",
+			"bdiffs": "1"
+		},
+		"miseq": {
+			"rules": ["head", "all", "graph", "data_setup", "beta_data", "miseq/process_otu", 
+				  "miseq/finalize_sequences", "miseq/remove_sequences", "miseq/process_sequences",
+				  "miseq/unique_sequences", "miseq/screen_sequences", "miseq/load"],
+			"trainset": "trainset9_032012.pds",
+			"seqerror_reference": "HMP_MOCK.v35.fasta"
+		}
+	},
+	"storage": {
+		"nbases" :"",
+		"lowest": "",
+		"lines": ""
+	}
+}

@@ -1,0 +1,15 @@
+rule pcr_sequences:
+    input:
+        names = '{project}.unique.names'
+        groups = '{project}.screen.groups'
+    output:
+        '{project}.preprocess.fasta',
+        '{project}.preprocess.count'
+    run:
+        with open('run.json') as data_file:
+            run = json.load(data_file)
+        silva = run["setup"]["silva"]
+
+        sysio_set("mothur \"#set.logfile(name=master.logfile, append=T); pcr.seqs(fasta="+silva+", start=11894, end=25319, keepdots=F, processors=8)\""[".fasta"], wildcards.project+".preprocess") 
+#find away where start and end are found out by code                                           
+         sysio.set("mothur \"#set.logfile(name=master.logfile, append=T); count.seqs(name="+input.names+", group="+input.groups+")\""[".count"], wildcards.project+".preprocess") 
