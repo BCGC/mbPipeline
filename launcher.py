@@ -63,6 +63,7 @@ if os.path.isfile("run.json"):
 			os.system("cp "+installed+"/defaults.json run.json")
 	except KeyError:
 		print("    -> new!=true or new not specified, will not overwrite!")
+		print("    -> However you may manually write in values to run.json and restart.")
 else:
 	os.system("cp "+installed+"/defaults.json run.json")
 
