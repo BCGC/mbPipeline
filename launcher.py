@@ -189,6 +189,10 @@ if new:
 
 		try:
 			nprocessors = args['processors']
+			globalprocessors = os.system("echo $INSERTVARHERE")
+			if globalprocessors != 0 :
+				nprocessors = globalprocessors
+				print("Determined number of processors from global variable.")
 			run["setup"]["nprocessors"] = nprocessors
 		except KeyError:
 			print("Number of processors not provided, will use default")
