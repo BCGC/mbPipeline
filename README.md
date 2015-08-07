@@ -11,7 +11,7 @@ To use this pipeline please clone it to your repository. You must have Python 3.
 
 The pipeline is launched by calling the launcher script. Here is an example call:
 ```
-python /Users/gowdanb/Desktop/mbPipeline/Unified/launcher.py pipeline=454 metadata=metadata.txt refpath=../reference datapath=../data trainset=trainset7_112011.pds project=test1
+python /Users/gowdanb/Desktop/mbPipeline/Unified/launcher.py pipeline=454 metadata=metadata.txt refpath=../reference datapath=../data trainset=trainset7_112011.pds processors=2 project=test1
 ```
 
 
@@ -41,7 +41,7 @@ This specifies the name of the silva file (if provided in the reference director
 ```project ```
 This is required and all generated data files will be prefixed by this.
 
-```nprocessors ```
+```processors ```
 This is the current method of specifying how many processors to use (if running on biowulf the job must be submitted with equal or more processors, and if not specified the launcher will attempt to determine the number of available processors).
 
 ```new ```
