@@ -1,14 +1,2 @@
-*.tar.gz
-*.zip
-*.fasta
-*.fastq
-*.logfile
-*.temp
-*.history
-*~
-^#*
-*.RData
-*.Rhistory
-*.map
-testing/
-Data/
+ref/454/silva.bacteria.fasta
+ref/miseq/silva.bacteria.fasta
