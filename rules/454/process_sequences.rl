@@ -32,7 +32,7 @@ rule process_sequences:
                                 "align.seqs(fasta="+input.fasta+", reference="+silva+", flip=T, processors="+str(nprocessors)+")\"", [".align"])
             fastacheck = outputs[".align"]
             p = subprocess.Popen("mothur \"#set.logfile(name=master.logfile, append=T); summary.seqs(fasta="+fastacheck+", name="+input.names+")\"", stdout=subprocess.PIPE, shell=True)
-            out = p.communicate()[0]
+            out = p.communicate()[0].decode("utf-8")
             p.wait()
             out = out[out.find("97.5%-tile:")+12:len(out)]
             out = out[out.find("\t")+1:len(out)]
