@@ -1,9 +1,0 @@
-Package: mbGraphics
-Title: Microbiome Pipeline Graphing Package
-Version: 0.1
-Author: Nikhil Gowda <nikhilbg96@gmail.com>
-Description: This package contains functions for graphing data in the microbiome pipeline. Four functions for graphing alpha diversity, beta diversity, number of sequences and phylogenetic data are present.
-Depends: R (>= 3.1.0), gdata, MASS, ggplot2, reshape2, scales
-License: Public
-LazyData: true
-Packaged: 2014-05-21 14:35:32 UTC; nikhilbg
