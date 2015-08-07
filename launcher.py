@@ -188,7 +188,7 @@ if new:
 			print("Minimum stack proportion not provided, will use default!")
 
 		try:
-			nprocessors = args['nprocessors']
+			nprocessors = args['processors']
 			run["setup"]["nprocessors"] = nprocessors
 		except KeyError:
 			print("Number of processors not provided, will use default")
