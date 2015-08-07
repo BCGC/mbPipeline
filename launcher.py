@@ -189,7 +189,7 @@ if new:
 
 		try:
 			nprocessors = args['processors']
-			globalprocessors = os.system("echo $INSERTVARHERE")
+			globalprocessors = os.system("echo $SLURM_NTASKS")
 			if globalprocessors != 0 :
 				nprocessors = globalprocessors
 				print("Determined number of processors from global variable.")
