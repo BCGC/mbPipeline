@@ -5,7 +5,7 @@ mbPipeline
 Nikhil Gowda, Randall Johnson, Kira Vasquez, Dominique Brown
 
 ==========
-mbPipeline is an automated workflow to process microbiome sequence data. Raw output files are generated for the users perusal, but the key feature of this pipeline is the automated graphics produced utilizing user specified metadata.
+mbPipeline is an automated workflow to process microbiome sequence data from both 454 and MiSeq sequencing (MiSeq pipeline not supported yet). Raw output files are generated for the users perusal, but the key feature of this pipeline is the automated graphics produced utilizing user specified metadata.
 
 To use this pipeline please clone it to your repository. You must have Python 3.X, Snakemake, and R installed. In order to generate graphics you must have the package mbGraphics (available at: www.github.com/BCGC/mbGraphics) installed on R. Numpy must be installed on python as well.
 
@@ -64,7 +64,8 @@ miseq specific arguments:
 ==========
 **Metadata file format:**
 
-*documentation here*
+The metadata file is a tab delimited file that is provided by the user. In the future if the metadata file is not provided the pipeline will generate basic graphics using just sample name. For now, if you do not want to use a metadata file please provide a blank metadata file; the pipeline will break at the relevant graphing rules but all raw outputs will still have been generated. 
+The metadata file should be formatted like this:
 
 
 ==========
